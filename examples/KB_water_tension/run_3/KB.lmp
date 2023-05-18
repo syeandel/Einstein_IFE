@@ -1,0 +1,61 @@
+#########################################################
+#########################################################
+## LIQUID SURFACE TENSION VIA THE KIRKWOOD-BUFF METHOD ##
+## Dr S. R. Yeandel 11/05/2023                         ##
+#########################################################
+#########################################################
+
+###############################################################################################################################
+# NOTES #######################################################################################################################
+###############################################################################################################################
+
+# To use this script:
+# ensure your liquid slab is perpendicular to the x direction!
+# set the "slice_frac" variable to define the thickness of each slice as a fraction of the x direction.
+# insert the line "include KB.lmp" before the "run" command in your main LAMMPS script.
+
+###############################################################################################################################
+# KB SETTINGS #################################################################################################################
+###############################################################################################################################
+
+#set slice fraction
+variable slice_frac equal 0.00025
+
+###############################################################################################################################
+# BEGIN SCRIPT ################################################################################################################
+###############################################################################################################################
+
+#clear previous output files
+shell rm FE_slices.txt FE_integral.txt
+
+#compute slice volume
+variable slice_vol equal vol*v_slice_frac
+
+#compute slice thickness via lattice vector cross-products
+variable slice_cross_a equal (ly*lz)
+variable slice_cross_b equal -(xy*lz)
+variable slice_cross_c equal (xy*yz)-(ly*xz)
+variable slice_area equal sqrt((v_slice_cross_a*v_slice_cross_a)+(v_slice_cross_b*v_slice_cross_b)+(v_slice_cross_c*v_slice_cross_c))
+variable slice_thickness equal v_slice_vol/v_slice_area
+
+#compute stress/atom
+compute atom_stress all stress/atom NULL
+
+#compute per-atom value
+variable atom_value atom -0.5*(c_atom_stress[1]-0.5*(c_atom_stress[2]+c_atom_stress[3]))/v_slice_vol
+
+#compute slices
+compute slices all chunk/atom bin/1d x 0.0 ${slice_frac} units reduced
+
+#average values within slices
+fix slice_value all ave/chunk ${Esample} $(v_screen/v_Esample) ${screen} slices v_atom_value norm none ave running file FE_slices.txt overwrite
+
+#integrate the value and convert units to J/m^2 (from bar*A)
+variable integral equal trap(f_slice_value[3])*v_slice_thickness*(10^-5)
+
+#output to file
+fix print_integral all print ${screen} "$(step) ${integral}" append FE_integral.txt screen no title "Timestep Surf_FE"
+
+###############################################################################################################################
+# END SCRIPT ##################################################################################################################
+###############################################################################################################################

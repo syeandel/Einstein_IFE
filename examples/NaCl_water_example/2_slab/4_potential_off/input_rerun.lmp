@@ -1,0 +1,100 @@
+##############################################
+##############################################
+## LAMMPS IFE rerun script                  ##
+## Written by Dr Stephen R. Yeandel         ##
+## 11/05/2023                               ##
+##############################################
+##############################################
+
+##############################################################################################################################################
+##############################################################################################################################################
+#variables
+
+variable Esample equal        1000     # energy sampling frequency (steps)
+variable screen equal        10000     # screen and writing output frequency (steps)
+
+##############################################################################################################################################
+##############################################################################################################################################
+#system settings
+
+#define units system
+units metal
+
+#data file format
+atom_style full
+
+#processor mapping
+processors * * * grid numa
+
+#set periodicity
+boundary p p p
+
+#read data files
+read_data data.lmp
+
+##############################################################################################################################################
+##############################################################################################################################################
+#forcefield settings
+
+#use script for potentials
+include potential.lmp
+
+#additional options
+special_bonds lj/coul 0.0 0.0 0.0								# default
+pair_modify tail no										# tail correction for Ow - Ow
+
+#slab dipole correction
+fix x_walls all wall/lj93 xlo EDGE 0.001 3.5 3.0 xhi EDGE 0.001 3.5 3.0 units box pbc yes	# wall repulsion for slabs
+include slab_correction.lmp									# slab dipole correction
+
+##############################################################################################################################################
+##############################################################################################################################################
+#rerun
+
+#calculate potential energy
+variable Ebulk equal pe
+variable Ebulk_sq equal v_Ebulk*v_Ebulk
+
+#set tracking fix
+fix C all ave/time ${Esample} $(v_screen/v_Esample) ${screen} v_Ebulk v_Ebulk_sq mode scalar ave running
+
+#population stats
+variable pop equal (step/v_Esample)/((step/v_Esample)-1)
+
+#averages and sample stdevs (https://stackoverflow.com/questions/1174984/how-to-efficiently-calculate-a-running-standard-deviation)
+variable Ebulk_ave equal f_C[1]
+variable Ebulk_stdev equal sqrt(v_pop*(f_C[2]-(f_C[1]*f_C[1])))
+
+#setup thermo output
+thermo ${screen}
+thermo_style custom step temp press vol etotal pe ke v_Ebulk v_Ebulk_ave v_Ebulk_stdev
+
+#balance processors
+#balance 1.0 shift xyz 10 1.0
+
+#rerun data collection
+rerun prod_traj.lmp.gz dump x y z ix iy iz
+
+#print details
+print "########################"
+print "U = ${Ebulk_ave}"
+print "########################"
+
+#clean up fixes
+unfix C
+
+#clean up computes
+
+
+#clean up variables
+variable Ebulk delete
+variable Ebulk_sq delete
+variable Ebulk_ave delete
+variable Ebulk_stdev delete
+variable pop delete
+
+#clean up groups
+
+##############################################################################################################################################
+##############################################################################################################################################
+

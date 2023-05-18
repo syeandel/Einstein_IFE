@@ -1,0 +1,114 @@
+#################################
+# SLAB CHARGE+DIPOLE CORRECTION #
+#################################
+
+#############################################
+# To use this script simply add the command #
+# "include slab_correction.lmp" to your     #
+# LAMMPS input script and set the "orient"  #
+# variable below.                           #
+#                                           #
+# Dr S. R. Yeandel 21/01/2021               #
+#############################################
+
+###########################################################
+# REFERENCES                                              #
+#                                                         #
+# Yeh and Berkowitz     https://doi.org/10.1063/1.479595  #
+# Ballenegger et al.    https://doi.org/10.1063/1.3216473 #
+###########################################################
+
+# print section info
+print ""
+print "########################################################"
+print "# LAMMPS triclinic slab correction by Dr S. R. Yeandel #"
+print "########################################################"
+print ""
+
+# set slab orientation (1 = yz plane, 2 = xz plane, 3 = xy plane)
+variable orient equal 1
+
+# calculate cross products
+print "Slab orientation:"
+if "${orient} == 1" then                         &
+	"print 'yz plane'"                       &
+	"variable cross_a equal (ly*lz)"         &
+	"variable cross_b equal -(xy*lz)"        &
+	"variable cross_c equal (xy*yz)-(ly*xz)" &
+elif "${orient} == 2"                            &
+	"print 'xz plane'"                       &
+	"variable cross_a equal 0"               &
+	"variable cross_b equal (lz*lx)"         &
+	"variable cross_c equal -(yz*lx)"        &
+elif "${orient} == 3"                            &
+	"print 'xy plane'"                       &
+	"variable cross_a equal 0"               &
+	"variable cross_b equal 0"               &
+	"variable cross_c equal (lx*ly)"
+print ""
+
+# calculate surface area
+variable area equal sqrt((v_cross_a*v_cross_a)+(v_cross_b*v_cross_b)+(v_cross_c*v_cross_c))
+
+# calculate surface normal
+variable norm_x equal v_cross_a/v_area
+variable norm_y equal v_cross_b/v_area
+variable norm_z equal v_cross_c/v_area
+
+# calculate periodic spacing
+variable slab_L equal vol/v_area
+
+# print norm
+print "Initial surface normal:"
+print "[${norm_x},${norm_y},${norm_z}]"
+print ""
+
+# compute per-atom properties
+compute property all property/atom q x y z
+
+# calculate total charge
+compute total_q all reduce sum c_property[1]
+
+# calculate per-atom distance along norm
+variable atom_r atom (v_norm_x*c_property[2])+(v_norm_y*c_property[3])+(v_norm_z*c_property[4])
+
+# calculate per-atom dipole
+variable atom_dipole atom c_property[1]*v_atom_r
+
+# compute total dipole
+compute total_dipole all reduce sum v_atom_dipole
+
+# calculate per-atom translational invariance correction
+variable atom_qrr atom v_atom_dipole*v_atom_r
+
+# compute total translational invariance correction
+compute total_qrr all reduce sum v_atom_qrr
+
+# calculate unit conversion and scaling
+variable convert equal 14.399645*(2*PI/vol)
+
+# calculate per-atom energies
+variable en_term_1 atom v_atom_r*c_total_dipole
+variable en_term_2 atom -0.5*(c_total_qrr+c_total_q*v_atom_r*v_atom_r)
+variable en_term_3 atom -c_total_q*v_slab_L*v_slab_L/12.0
+variable dipole_energy atom v_convert*c_property[1]*(v_en_term_1+v_en_term_2+v_en_term_3)
+
+# calculate per-atom dipole force
+variable dipole_force atom -2*v_convert*c_property[1]*(c_total_dipole-c_total_q*v_atom_r)
+
+# calculate the un-projected per-atom forces
+variable dipole_force_x atom v_norm_x*v_dipole_force
+variable dipole_force_y atom v_norm_y*v_dipole_force
+variable dipole_force_z atom v_norm_z*v_dipole_force
+
+# apply correction
+fix slabcorr all addforce v_dipole_force_x v_dipole_force_y v_dipole_force_z energy v_dipole_energy
+
+# ensure correction is applied to total potential energy
+fix_modify slabcorr energy yes virial no
+
+# print end section
+print "#######"
+print "# END #"
+print "#######"
+print ""

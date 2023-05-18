@@ -1,0 +1,165 @@
+###############################################################
+###############################################################
+## INTERFACIAL FREE ENERGY CALCULATION VIA EINSTEIN CRYSTALS ##
+## Dr S. R. Yeandel 11/05/2023                               ##
+## https://doi.org/10.1063/5.0095130                         ##
+###############################################################
+###############################################################
+
+###############################################################################################################################
+# NOTES #######################################################################################################################
+###############################################################################################################################
+
+# To be written...
+
+
+
+
+
+
+###############################################################################################################################
+# TI SETTINGS #################################################################################################################
+###############################################################################################################################
+
+# Einstein settings
+variable ein_lambda equal 1.0000
+variable ein_delta equal 0.0
+#	variable ein_delta equal 0.01
+#	variable ein_delta equal -0.01
+
+# Potential settings
+variable pot_lambda equal 0.1250
+variable pot_delta equal 0.0
+#	variable pot_delta equal 0.01
+#	variable pot_delta equal -0.01
+
+###############################################################################################################################
+# INTERACTION SETTINGS ########################################################################################################
+###############################################################################################################################
+
+# einstein group
+group einstein_group type 1 2
+
+# einstein spring constant
+variable ein_spring equal 10.0
+
+# Additional potential settings are located further down.
+# That section requires extensive modification for each system and so is impractical to include here.
+
+###############################################################################################################################
+# HEADER OUTPUT ###############################################################################################################
+###############################################################################################################################
+
+# delete TI.txt with shell
+shell rm TI.txt
+
+# print file header
+print '###############################' append TI.txt screen no
+print '###############################' append TI.txt screen no
+print '## THERMODYNAMIC INTEGRATION ##' append TI.txt screen no
+print '###############################' append TI.txt screen no
+print '###############################' append TI.txt screen no
+print '' append TI.txt screen no
+
+###############################################################################################################################
+# EINSTEIN CRYSTAL ############################################################################################################
+###############################################################################################################################
+# mix and output
+
+# calculate mixing function
+variable ein_mix equal (v_ein_lambda^5)*(70*(v_ein_lambda^4)-315*(v_ein_lambda^3)+540*(v_ein_lambda^2)-420*v_ein_lambda+126)
+variable ein_dmix equal 630*((v_ein_lambda^2)-v_ein_lambda)^4
+variable ein_eff equal v_ein_mix*(1+v_ein_delta)
+
+# output parameters
+print '####################' append TI.txt screen no
+print '# EINSTEIN CRYSTAL #' append TI.txt screen no
+print '####################' append TI.txt screen no
+print '' append TI.txt screen no
+print 'Ein_Lambda: ${ein_lambda}' append TI.txt screen no
+print 'Ein_Delta: ${ein_delta}' append TI.txt screen no
+print 'Mixing: Polynomial' append TI.txt screen no
+print 'F(Ein_Lambda): ${ein_mix}' append TI.txt screen no
+print 'F`(Ein_Lambda): ${ein_dmix}' append TI.txt screen no
+print '' append TI.txt screen no
+
+######################################################
+# scale parameters
+
+# calculate scaled spring
+variable scaled_spring equal v_ein_spring*v_ein_eff
+
+######################################################
+# apply parameters
+
+# add harmonic wells
+if "${ein_lambda} > 0.0" then                                          &
+	"fix einstein einstein_group spring/self ${scaled_spring}"     &
+	"fix_modify einstein energy yes"                               &
+
+############################################################################################################################
+# POTENTIAL SCALING ########################################################################################################
+############################################################################################################################
+# mix and output
+
+# calculate mixing function
+variable pot_mix equal (v_pot_lambda^5)*(70*(v_pot_lambda^4)-315*(v_pot_lambda^3)+540*(v_pot_lambda^2)-420*v_pot_lambda+126)
+variable pot_dmix equal 630*((v_pot_lambda^2)-v_pot_lambda)^4
+variable pot_eff equal v_pot_mix*(1+v_pot_delta)
+
+# output parameters
+print '#####################' append TI.txt screen no
+print '# POTENTIAL SCALING #' append TI.txt screen no
+print '#####################' append TI.txt screen no
+print '' append TI.txt screen no
+print 'Pot_Lambda: ${pot_lambda}' append TI.txt screen no
+print 'Pot_Delta: ${pot_delta}' append TI.txt screen no
+print 'Mixing: Polynomial' append TI.txt screen no
+print 'F(Pot_Lambda): ${pot_mix}' append TI.txt screen no
+print 'F`(Pot_Lambda): ${pot_dmix}' append TI.txt screen no
+print '' append TI.txt screen no
+
+######################################################
+# scale parameters
+
+# calculate scaled charges
+variable scaled_q1 equal  1.00*v_pot_eff					# Na
+variable scaled_q2 equal -1.00*v_pot_eff					# Cl
+variable scaled_q3 equal -0.82							# Ow
+variable scaled_q4 equal  0.41							# Hw
+
+######################################################
+# apply parameters
+
+# set charges
+set type 1 charge ${scaled_q1}
+set type 2 charge ${scaled_q2}
+set type 3 charge ${scaled_q3}
+set type 4 charge ${scaled_q4}
+
+# pair/bond/angle style
+pair_style hybrid/overlay coul/long 9.0 lj/cut/soft 1.0 0.01 12.0
+bond_style harmonic
+angle_style harmonic
+
+# pair coefficients
+pair_coeff * * coul/long							# long-range coulombics
+pair_coeff 1 1 lj/cut/soft 0.015292000 2.159538493 ${pot_eff}			# Na - Na
+pair_coeff 1 2 lj/cut/soft 0.002911708 3.494995671 ${pot_eff}			# Na - Cl
+pair_coeff 1 3 lj/cut/soft 0.010152245 2.662514246 ${pot_eff}			# Na - Ow
+pair_coeff 2 2 lj/cut/soft 0.000554410 4.830452850 ${pot_eff}			# Cl - Cl
+pair_coeff 2 3 lj/cut/soft 0.001933061 3.997971425 ${pot_eff}			# Cl - Ow
+pair_coeff 3 3 lj/cut/soft 0.006740000 3.165490000 1.00000000			# Ow - Ow
+
+# bond coefficients
+bond_coeff 1 22.965 1.012							# Ow - Hw bond
+
+# angle coefficients
+angle_coeff 1 1.6455 113.24							# Hw - Ow - Hw angle
+
+# long-range coulombic solver
+kspace_style pppm 1.0e-5							# usual PPPM accuracy 1.0e-5
+
+###############################################################################################################################
+# END SCRIPT ##################################################################################################################
+###############################################################################################################################

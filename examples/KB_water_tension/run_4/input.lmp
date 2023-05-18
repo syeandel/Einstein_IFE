@@ -1,0 +1,197 @@
+##############################################
+##############################################
+## LAMMPS IFE input script                  ##
+## Written by Dr Stephen R. Yeandel         ##
+## 11/05/2023                               ##
+##############################################
+##############################################
+
+##############################################################################################################################################
+##############################################################################################################################################
+#variables
+
+variable seed equal          94278     # random number seed
+variable T equal             300.0     # temperature (kelvin)
+variable dt equal            0.001     # timestep (femtoseconds)
+variable screen equal        10000     # screen output frequency (steps)
+variable Esample equal        1000     # energy sampling and traj output frequency (steps)
+
+variable rep equal               0     # replication flag (1 = TRUE)
+variable repx equal              1     # replication factor for x
+variable repy equal              1     # replication factor for y
+variable repz equal              1     # replication factor for z
+
+variable Nequi equal        100000     # equilibration time (steps)
+variable Nprod equal        500000     # production time (steps)
+
+variable traj equal              0     # 1 = print traj files
+
+##############################################################################################################################################
+##############################################################################################################################################
+#system settings
+
+#define units system
+units metal
+
+#data file format
+atom_style full
+
+#processor mapping
+processors * * * grid numa
+
+#set periodicity
+boundary p p p
+
+#read data files
+read_data data.lmp
+
+#replicate if requested
+if "${rep} == 1" then "replicate ${repx} ${repy} ${repz}"
+
+##############################################################################################################################################
+##############################################################################################################################################
+#time settings
+
+#timestep
+timestep ${dt}
+
+#time integrator
+run_style verlet
+
+##############################################################################################################################################
+##############################################################################################################################################
+#forcefield settings
+
+#use script for potentials
+include potential.lmp
+
+#additional options
+special_bonds lj/coul 0.0 0.0 0.0								# default
+pair_modify tail no										# tail correction for Ow - Ow
+
+#slab dipole correction
+fix x_walls all wall/lj93 xlo EDGE 0.001 3.5 3.0 xhi EDGE 0.001 3.5 3.0 units box pbc yes	# wall repulsion for slabs
+include slab_correction.lmp									# slab dipole correction
+
+##############################################################################################################################################
+##############################################################################################################################################
+#equilibration run
+
+#open new log file
+log equi_log.lmp
+
+#reset timestep
+reset_timestep 0
+
+#create velocities
+velocity all create $T ${seed} mom yes rot yes dist gaussian
+
+#set fixes
+fix A all nve
+fix B all langevin $T $T 0.1 ${seed} zero yes
+fix C all momentum 1 linear 1 1 1 angular rescale
+
+#setup thermo output
+thermo ${screen}
+thermo_style custom step temp press vol etotal pe ke
+
+#trajectory output
+if "${traj} == 1" then &
+	"dump 1 all custom ${Esample} equi_traj.lmp.gz id type xs ys zs ix iy iz"
+
+#balance processors
+balance 1.0 shift xyz 10 1.0
+
+#run data collection
+run ${Nequi}
+
+#write new data file
+write_data equi_data.lmp nocoeff
+
+#clean up fixes
+unfix A
+unfix B
+unfix C
+
+#clean up trajectory output
+if "${traj} == 1" then &
+"undump 1"
+
+##############################################################################################################################################
+##############################################################################################################################################
+#production run
+
+#open new log file
+log prod_log.lmp
+
+#reset timestep
+reset_timestep 0
+
+#calculate total energy
+variable Ebulk equal pe
+variable Ebulk_sq equal v_Ebulk*v_Ebulk
+
+#set fixes
+fix A all nve
+fix B all langevin $T $T 0.1 ${seed} zero yes
+
+#set tracking fix
+fix C all ave/time ${Esample} $(v_screen/v_Esample) ${screen} v_Ebulk v_Ebulk_sq mode scalar ave running
+
+#population stats
+variable pop equal (step/v_Esample)/((step/v_Esample)-1)
+
+#averages and sample stdevs (https://stackoverflow.com/questions/1174984/how-to-efficiently-calculate-a-running-standard-deviation)
+variable Ebulk_ave equal f_C[1]
+variable Ebulk_stdev equal sqrt(v_pop*(f_C[2]-(f_C[1]*f_C[1])))
+
+#setup thermo output
+thermo ${screen}
+thermo_style custom step temp press vol etotal pe ke v_Ebulk v_Ebulk_ave v_Ebulk_stdev
+
+#trajectory output
+if "${traj} == 1" then &
+	"dump 1 all custom ${Esample} prod_traj.lmp.gz id type xs ys zs ix iy iz"
+
+#balance processors
+balance 1.0 shift xyz 10 1.0
+
+#include Kirkwood-Buff script
+include KB.lmp
+
+#run data collection
+run ${Nprod}
+
+#write new data file
+write_data prod_data.lmp nocoeff
+
+#print details
+print "########################"
+print "U = ${Ebulk_ave}"
+print "########################"
+
+#clean up fixes
+unfix A
+unfix B
+unfix C
+
+#clean up computes
+
+
+#clean up variables
+variable Ebulk delete
+variable Ebulk_sq delete
+variable Ebulk_ave delete
+variable Ebulk_stdev delete
+variable pop delete
+
+#clean up groups
+
+
+#clean up trajectory output
+if "${traj} == 1" then &
+"undump 1"
+
+##############################################################################################################################################
+##############################################################################################################################################
+#end of script
