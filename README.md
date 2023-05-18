@@ -1,6 +1,8 @@
 # Einstein_IFE
 This repository contains example LAMMPS scripts for computing Interfacial Free Energies via Einstein Crystals.
 
+$$\gamma_{Interface} = \gamma_{Liquid} + \frac{\Delta F_{Bulk}^{Ein.} - \Delta F_{Slab}^{Ein.}}{2A}$$
+
 [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130)
 
 ## Thermodynamic Integration
@@ -34,6 +36,12 @@ We set $\delta$ to be a function of $\lambda$ to avoid numerical issues which ma
 $$\delta(\lambda) = 0.01 \times f(\lambda)$$
 
 ## The Kirkwood-Buff Method
+
+$$\gamma_{Liquid} = \frac{1}{2} \int_{0}^{L_{x}} [P_{xx} - 0.5(P_{yy}+P_{zz})] \,dx$$
+
+Where $\gamma_{Liquid}$ is the surface tension of the liquid, $L_x$ is the length of the simulation cell in the $x$ direction and $P_{xx}$, $P_{yy}$ and $P_{zz}$ are the diagonal components of the pressure tensor. The integral is performed numerically by dividing the simulation cell into thin slices over the perpendicular direction $x$ and computing the average pressure tensor in each slice. The prefactor of $1/2$ accounts for the presence of two liquid/vacuum interfaces.
+
+Note the KB method is applicable only to fluid interfaces and cannot be used for solids.
 
 ## A Worked Example
 
