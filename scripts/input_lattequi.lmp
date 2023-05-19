@@ -1,0 +1,156 @@
+##############################################
+##############################################
+## LAMMPS lattice equilibration script      ##
+## Written by Dr Stephen R. Yeandel         ##
+## 12/05/2021                               ##
+##############################################
+##############################################
+
+##############################################################################################################################################
+##############################################################################################################################################
+#constants
+
+##############################################################################################################################################
+##############################################################################################################################################
+#variables
+
+variable seed equal          94275     # random number seed
+variable T equal             300.0     # temperature (kelvin)
+variable P equal               0.0     # pressure (bar)
+variable isotropy equal          1     # isotropy flag (1 = isotropic, 2 = anisotropic, 3 = full triclinic,
+                                       # 4 = triclinic with xy and xz fixed, 5 = triclinic with x, xy and xz fixed)
+
+variable dt equal            0.001     # timestep (femtoseconds)
+variable screen equal         1000     # screen and writing output frequency (steps)
+
+variable rep equal               1     # replication flag (1 = TRUE)
+variable repx equal             12     # replication factor for x
+variable repy equal             12     # replication factor for y
+variable repz equal             12     # replication factor for z
+
+variable Nlatt equal        600000     # lattice averaging time (steps)
+variable ldelay equal       100000     # delay before starting lattice averaging (steps)
+variable lsample equal         100     # lattice vector sampling frequency (steps)
+
+variable traj equal              0     # 1 = print traj files
+
+##############################################################################################################################################
+##############################################################################################################################################
+#system settings
+
+#define units system
+units metal
+
+#data file format
+atom_style full
+
+#processor mapping
+processors * * * grid numa
+
+#set periodicity
+boundary p p p
+
+#read data files
+read_data data.lmp
+
+#replicate if requested
+if "${rep} == 1" then "replicate ${repx} ${repy} ${repz}"
+
+##############################################################################################################################################
+##############################################################################################################################################
+#time settings
+
+#timestep
+timestep ${dt}
+
+#time integrator
+run_style verlet
+
+##############################################################################################################################################
+##############################################################################################################################################
+#forcefield settings
+
+#use script for potentials
+include potential.lmp
+
+#additional options
+special_bonds lj/coul 0.0 0.0 0.0								# default
+pair_modify tail no										# tail correction for Ow - Ow
+
+#slab dipole correction
+#fix x_walls all wall/lj93 xlo EDGE 0.001 3.5 3.0 xhi EDGE 0.001 3.5 3.0 units box pbc yes	# wall repulsion for slabs
+#include slab_correction.lmp									# slab dipole correction
+
+##############################################################################################################################################
+##############################################################################################################################################
+#lattice equilibration and rescaling
+
+#open new log file
+log lattequi_log.lmp
+
+#reset timestep
+reset_timestep 0
+
+#create velocities
+velocity all create $T ${seed} mom yes rot yes dist gaussian
+
+#set variables
+variable myLx equal lx
+variable myLy equal ly
+variable myLz equal lz
+variable myxy equal xy
+variable myxz equal xz
+variable myyz equal yz
+
+#set fixes
+fix A all momentum 1 linear 1 1 1 angular rescale
+if "${isotropy} == 1" then "fix B all npt temp $T $T 0.1 iso $P $P 1.0"
+if "${isotropy} == 2" then "fix B all npt temp $T $T 0.1 aniso $P $P 1.0"
+if "${isotropy} == 3" then "fix B all npt temp $T $T 0.1 tri $P $P 1.0"
+if "${isotropy} == 4" then "fix B all npt temp $T $T 0.1 x $P $P 1.0 y $P $P 1.0 z $P $P 1.0 yz 0.0 0.0 1.0"
+if "${isotropy} == 5" then "fix B all npt temp $T $T 0.1 y $P $P 1.0 z $P $P 1.0 yz 0.0 0.0 1.0"
+
+#set tracking fix
+fix C all ave/time ${lsample} $((v_Nlatt-v_ldelay)/v_lsample) ${Nlatt} v_myLx v_myLy v_myLz v_myxy v_myxz v_myyz mode scalar ave one
+
+#setup thermo output
+thermo ${screen}
+thermo_style custom step temp press vol etotal pe ke lx ly lz xy xz yz
+
+#trajectory output
+if "${traj} == 1" then &
+	"dump 1 all custom ${screen} lattequi_traj.lmp.gz id type xs ys zs ix iy iz"
+
+#balance processors
+balance 1.0 shift xyz 10 1.0
+
+#run lattice equilibration
+run ${Nlatt}
+
+#change box size/shape
+if "${isotropy} <= 2" then "change_box all x final 0.0 $(f_C[1]) y final 0.0 $(f_C[2]) z final 0.0 $(f_C[3]) remap units box"
+if "${isotropy} >= 3" then "change_box all x final 0.0 $(f_C[1]) y final 0.0 $(f_C[2]) z final 0.0 $(f_C[3]) xy final $(f_C[4]) xz final $(f_C[5]) yz final $(f_C[6]) remap units box"
+
+#write new data file
+write_data lattequi_data.lmp nocoeff
+
+#clean up fixes
+unfix A
+unfix B
+unfix C
+
+#clean up variables
+variable myLx delete
+variable myLy delete
+variable myLz delete
+variable myxy delete
+variable myxz delete
+variable myyz delete
+
+#clean up trajectory output
+if "${traj} == 1" then &
+"undump 1"
+
+##############################################################################################################################################
+##############################################################################################################################################
+#end of script

@@ -1,0 +1,237 @@
+###############################################################
+###############################################################
+## INTERFACIAL FREE ENERGY CALCULATION VIA EINSTEIN CRYSTALS ##
+## Dr S. R. Yeandel 11/05/2023                               ##
+## https://doi.org/10.1063/5.0095130                         ##
+###############################################################
+###############################################################
+
+###############################################################################################################################
+# NOTES #######################################################################################################################
+###############################################################################################################################
+
+# To be written...
+
+
+
+
+
+
+###############################################################################################################################
+# TI SETTINGS #################################################################################################################
+###############################################################################################################################
+
+# Einstein settings
+variable ein_lambda equal 0.0000000
+variable ein_delta equal 0.0
+#	variable ein_delta equal 0.01
+#	variable ein_delta equal -0.01
+
+# Potential settings
+variable pot_lambda equal 1.0000000
+variable pot_delta equal 0.0
+#	variable pot_delta equal 0.01
+#	variable pot_delta equal -0.01
+
+###############################################################################################################################
+# INTERACTION SETTINGS ########################################################################################################
+###############################################################################################################################
+
+# einstein group
+group einstein_group type 1 2 3 4 5
+
+# einstein spring constant
+variable ein_spring equal 10.0
+
+# Additional potential settings are located further down.
+# That section requires extensive modification for each system and so is impractical to include here.
+
+###############################################################################################################################
+# HEADER OUTPUT ###############################################################################################################
+###############################################################################################################################
+
+# delete TI.txt with shell
+shell rm TI.txt
+
+# print file header
+print '###############################' append TI.txt screen no
+print '###############################' append TI.txt screen no
+print '## THERMODYNAMIC INTEGRATION ##' append TI.txt screen no
+print '###############################' append TI.txt screen no
+print '###############################' append TI.txt screen no
+print '' append TI.txt screen no
+
+###############################################################################################################################
+# EINSTEIN CRYSTAL ############################################################################################################
+###############################################################################################################################
+# mix and output
+
+# calculate mixing function
+variable ein_mix equal (v_ein_lambda^5)*(70*(v_ein_lambda^4)-315*(v_ein_lambda^3)+540*(v_ein_lambda^2)-420*v_ein_lambda+126)
+variable ein_dmix equal 630*((v_ein_lambda^2)-v_ein_lambda)^4
+variable ein_eff equal v_ein_mix*(1+v_ein_delta)
+
+# output parameters
+print '####################' append TI.txt screen no
+print '# EINSTEIN CRYSTAL #' append TI.txt screen no
+print '####################' append TI.txt screen no
+print '' append TI.txt screen no
+print 'Ein_Lambda: ${ein_lambda}' append TI.txt screen no
+print 'Ein_Delta: ${ein_delta}' append TI.txt screen no
+print 'Mixing: Polynomial' append TI.txt screen no
+print 'F(Ein_Lambda): ${ein_mix}' append TI.txt screen no
+print 'F`(Ein_Lambda): ${ein_dmix}' append TI.txt screen no
+print '' append TI.txt screen no
+
+######################################################
+# scale parameters
+
+# calculate scaled spring
+variable scaled_spring equal v_ein_spring*v_ein_eff
+
+######################################################
+# apply parameters
+
+# add harmonic wells
+if "${ein_lambda} > 0.0" then                                          &
+	"fix einstein einstein_group spring/self ${scaled_spring}"     &
+	"fix_modify einstein energy yes"                               &
+
+############################################################################################################################
+# POTENTIAL SCALING ########################################################################################################
+############################################################################################################################
+# mix and output
+
+# calculate mixing function
+variable pot_mix equal (v_pot_lambda^5)*(70*(v_pot_lambda^4)-315*(v_pot_lambda^3)+540*(v_pot_lambda^2)-420*v_pot_lambda+126)
+variable pot_dmix equal 630*((v_pot_lambda^2)-v_pot_lambda)^4
+variable pot_eff equal v_pot_mix*(1+v_pot_delta)
+
+# output parameters
+print '#####################' append TI.txt screen no
+print '# POTENTIAL SCALING #' append TI.txt screen no
+print '#####################' append TI.txt screen no
+print '' append TI.txt screen no
+print 'Pot_Lambda: ${pot_lambda}' append TI.txt screen no
+print 'Pot_Delta: ${pot_delta}' append TI.txt screen no
+print 'Mixing: Polynomial' append TI.txt screen no
+print 'F(Pot_Lambda): ${pot_mix}' append TI.txt screen no
+print 'F`(Pot_Lambda): ${pot_dmix}' append TI.txt screen no
+print '' append TI.txt screen no
+
+######################################################
+# scale parameters
+
+# calculate scaled charges
+variable scaled_q1 equal			-0.84*v_pot_eff				# Os
+variable scaled_q2 equal			-0.82*v_pot_eff				# Ow
+variable scaled_q3 equal			 0.41*v_pot_eff				# Hw
+variable scaled_q4 equal			 1.36*v_pot_eff				# S
+variable scaled_q5 equal			 2.00*v_pot_eff				# Ca
+variable scaled_q6 equal			-0.84					# Os2
+variable scaled_q7 equal			-0.82					# Ow2
+variable scaled_q8 equal			 0.41					# Hw2
+variable scaled_q9 equal			 1.36					# S2
+variable scaled_q10 equal			 2.00					# Ca2
+
+# (system_1) calculate scaled pair coefficients
+variable scaled_buck_A_1_1 equal		103585.02*v_pot_eff			# Os - Os
+variable scaled_buck_A_1_2 equal		12534.455133*v_pot_eff			# Os - Ow
+variable scaled_buck_A_1_5 equal		1815.6986*v_pot_eff			# Os - Ca
+variable scaled_ljsoft_lambda_2_2 equal		v_pot_eff				# Ow - Ow
+variable scaled_ljmdf_epsilon_2_5 equal		0.00095*v_pot_eff			# Ow - Ca
+
+# (system_1 & system_2 cross) calculate scaled pair coefficients
+variable scaled_buck_A_1_6 equal		103585.02*v_pot_eff			# Os - Os2
+variable scaled_buck_A_1_7 equal		12534.455133*v_pot_eff			# Os - Ow2
+variable scaled_buck_A_1_10 equal		1815.6986*v_pot_eff			# Os - Ca2
+variable scaled_buck_A_2_6 equal		12534.455133*v_pot_eff			# Ow - Os2
+variable scaled_ljsoft_lambda_2_7 equal		v_pot_eff				# Ow - Ow2
+variable scaled_ljmdf_epsilon_2_10 equal	0.00095*v_pot_eff			# Ow - Ca2
+variable scaled_buck_A_5_6 equal		1815.6986*v_pot_eff			# Ca - Os2
+variable scaled_ljmdf_epsilon_5_7 equal		0.00095*v_pot_eff			# Ca - Ow2
+
+# (system_2) calculate scaled pair coefficients
+variable scaled_buck_A_6_6 equal		103585.02				# Os2 - Os2
+variable scaled_buck_A_6_7 equal		12534.455133				# Os2 - Ow2
+variable scaled_buck_A_6_10 equal		1815.6986				# Os2 - Ca2
+variable scaled_ljsoft_lambda_7_7 equal		1.0					# Ow2 - Ow2
+variable scaled_ljmdf_epsilon_7_10 equal	0.00095					# Ow2 - Ca2
+
+# calculate scaled bond coefficients
+variable scaled_b1 equal			22.965*v_pot_eff			# Ow - Hw bond
+variable scaled_b2 equal			5.0*v_pot_eff				# S - Os bond
+variable scaled_b3 equal			22.965					# Ow2 - Hw2 bond
+variable scaled_b4 equal			5.0					# S2 - Os2 bond
+
+# calculate scaled angle coefficients
+variable scaled_a1 equal			1.6455*v_pot_eff			# Hw - Ow - Hw angle
+variable scaled_a2 equal			7.5*v_pot_eff				# Os - S - Os angle
+variable scaled_a3 equal			1.6455					# Hw2 - Ow2 - Hw2 angle
+variable scaled_a4 equal			7.5					# Os2 - S2 - Os2 angle
+
+######################################################
+# apply parameters
+
+# set charges
+set type 1 charge ${scaled_q1}
+set type 2 charge ${scaled_q2}
+set type 3 charge ${scaled_q3}
+set type 4 charge ${scaled_q4}
+set type 5 charge ${scaled_q5}
+set type 6 charge ${scaled_q6}
+set type 7 charge ${scaled_q7}
+set type 8 charge ${scaled_q8}
+set type 9 charge ${scaled_q9}
+set type 10 charge ${scaled_q10}
+
+# pair/bond/angle style
+pair_style hybrid/overlay coul/long 9.0 buck/mdf 6.0 9.0 lj/cut/soft 1.0 0.01 12.0 lj/mdf 6.0 9.0 
+bond_style hybrid harmonic morse
+angle_style harmonic
+
+# global pair coefficients
+pair_coeff * * coul/long								# real-space coulombics
+
+# system_1 coeffs
+pair_coeff 1 1 buck/mdf		${scaled_buck_A_1_1} 0.2 0.0				# Os - Os
+pair_coeff 1 2 buck/mdf		${scaled_buck_A_1_2} 0.246 0.0				# Os - Ow
+pair_coeff 1 5 buck/mdf		${scaled_buck_A_1_5} 0.283373 0.0			# Os - Ca
+pair_coeff 2 2 lj/cut/soft	0.00674 3.16549 ${scaled_ljsoft_lambda_2_2}		# Ow - Ow
+pair_coeff 2 5 lj/mdf		${scaled_ljmdf_epsilon_2_5} 3.35			# Ow - Ca
+
+# system_1 & system_2 cross coeffs
+pair_coeff 1 6 buck/mdf		${scaled_buck_A_1_6} 0.2 0.0				# Os - Os2
+pair_coeff 1 7 buck/mdf		${scaled_buck_A_1_7} 0.246 0.0				# Os - Ow2
+pair_coeff 1 10 buck/mdf	${scaled_buck_A_1_10} 0.283373 0.0			# Os - Ca2
+pair_coeff 2 6 buck/mdf		${scaled_buck_A_2_6} 0.246 0.0				# Ow - Os2
+pair_coeff 2 7 lj/cut/soft	0.00674 3.16549 ${scaled_ljsoft_lambda_2_7}		# Ow - Ow2
+pair_coeff 2 10 lj/mdf		${scaled_ljmdf_epsilon_2_10} 3.35			# Ow - Ca2
+pair_coeff 5 6 buck/mdf		${scaled_buck_A_5_6} 0.283373 0.0			# Ca - Os2
+pair_coeff 5 7 lj/mdf		${scaled_ljmdf_epsilon_5_7} 3.35			# Ca - Ow2
+
+# system_2 coeffs
+pair_coeff 6 6 buck/mdf		${scaled_buck_A_6_6} 0.2 0.0				# Os2 - Os2
+pair_coeff 6 7 buck/mdf		${scaled_buck_A_6_7} 0.246 0.0				# Os2 - Ow2
+pair_coeff 6 10 buck/mdf	${scaled_buck_A_6_10} 0.283373 0.0			# Os2 - Ca2
+pair_coeff 7 7 lj/cut/soft	0.00674 3.16549 ${scaled_ljsoft_lambda_7_7}		# Ow2 - Ow2
+pair_coeff 7 10 lj/mdf		${scaled_ljmdf_epsilon_7_10} 3.35			# Ow2 - Ca2
+
+# bond coefficients
+bond_coeff 1 harmonic		${scaled_b1} 1.012					# Ow - Hw bond
+bond_coeff 2 morse		${scaled_b2} 1.2 1.505					# S - Os bond
+bond_coeff 3 harmonic		${scaled_b3} 1.012					# Ow2 - Hw2 bond
+bond_coeff 4 morse		${scaled_b4} 1.2 1.505					# S2 - Os2 bond
+
+# angle coefficients
+angle_coeff 1			${scaled_a1} 113.24					# Hw - Ow - Hw angle
+angle_coeff 2			${scaled_a2} 109.47					# Os - S - Os angle
+angle_coeff 3			${scaled_a3} 113.24					# Hw2 - Ow2 - Hw2 angle
+angle_coeff 4			${scaled_a4} 109.47					# Os2 - S2 - Os2 angle
+
+# long-range coulombic solver
+kspace_style pppm 1.0e-5								# usual PPPM accuracy 1.0e-5
+
+###############################################################################################################################
+# END SCRIPT ##################################################################################################################
+###############################################################################################################################
