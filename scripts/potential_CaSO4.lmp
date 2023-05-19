@@ -10,12 +10,13 @@
 # NOTES #######################################################################################################################
 ###############################################################################################################################
 
-# To be written...
+# Implementation of the force field of Byrne et al.
+# https://doi.org/10.1021/acs.jpcc.7b09820
 
-
-
-
-
+# Particles are split into two "systems".
+# System 1 particles belong to the solid and are transformed into Einstein Crystals.
+# System 2 particles belong to the liquid and remain fully interacting.
+# Cross interactions between systems 1 and 2 are deavtivated alongside the internal interactions in system 1.
 
 ###############################################################################################################################
 # TI SETTINGS #################################################################################################################
