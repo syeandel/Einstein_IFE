@@ -1,7 +1,7 @@
 # Einstein_IFE
 This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals. The general idea is to use an Einstein crystal as a reference state into which the solid bulk and slab may be easily transformed. As the free energy of an Einstein crystal does not depend upon the cartesian positions of the constituent atoms, an explicit reconstruction is avoided.
 
-The thermodynamic pathway to create the interface may be visualised as generating a vacuum gap in a liquid (creating 2 liquid/vacuum interfaces), conversion of bulk material into an Einstein crystal, and conversion of the Einstein crystal into a slab within the vacuum gap in contact with the 2 liquid interfaces. The total free energy of this process is divided by twice the area of the simulation cell to obtain an IFE. In practice, the slab is converted into an Einstein crystal and the free energy of this part of the process is negated:
+The thermodynamic pathway to create the interface may be visualised as generating a vacuum gap in a liquid (creating 2 liquid/vacuum interfaces), conversion of bulk material into an Einstein crystal, and conversion of the Einstein crystal into a slab within the vacuum gap in contact with the 2 liquid interfaces. The total free energy of this process is divided by twice the area of the simulation cell to obtain an IFE. In practice, the slab is converted into an Einstein crystal and the free energy of this part of the process is negated. The free energy to create the liquid/vacuum interfaces also simplifies:
 
 $$\gamma_{Interface} = \gamma_{Liquid} + \frac{\Delta F_{Bulk}^{Ein.} - \Delta F_{Slab}^{Ein.}}{2A}$$
 
