@@ -264,50 +264,23 @@ The first task is to compute the free energy of transforming NaCl bulk into an E
 
 
 
-
 #### Calculate average lattice vectors
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/1_lattice_equilibration](examples/NaCl_water_example/1_bulk/1_lattice_equilibration).
 
-In this calculation a cubic unit cell of NaCl is read from `data.lmp` and expanded 12x in each dimension. The simulation cell is then run under the chosen conditions in an isotropic NPT ensemble for 0.6 ns. The first 0.1 ns is discarded and then the lattice vectors are recorded every 100 fs. At the end of the simulation the average lattice vectors are calculated and a new `lattequi_data.lmp` is written with the average lattice vectors imposed.
-
-
-
-
-
-
-
+In this calculation a cubic unit cell of NaCl is read from `data.lmp` and the `input_lattequi.lmp` script is used to create a supercell with the correct average lattice vectors for the conditions specified.
 
 #### Calculate enthalpy
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/2_enthalpy](examples/NaCl_water_example/1_bulk/2_enthalpy).
 
-This stage is optional but useful if the interfacial enthalpy is desired at a later date.
-
-The `lattequi_data.lmp` file has been copied from the previous stage and renamed `data.lmp`. 
-
-LAMMPS is run and an average potential energy is calculated and a new data file called `prod_data.lmp` is produced.
-
-
-
-
-
-
-
-
-
-
-
+This stage is optional but useful if the interfacial enthalpy is desired at a later date. The `lattequi_data.lmp` file has been copied from the previous stage and renamed `data.lmp`. LAMMPS is run and an average potential energy is calculated and a new data file called `prod_data.lmp` is produced.
 
 #### Activate harmonic wells
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/3_wells_on](examples/NaCl_water_example/1_bulk/3_wells_on).
 
-The `prod_data.lmp` file has been copied in from the previous calculation and named `data.lmp`.
-
-The directory also contains an `input_run.lmp` file and an `input_rerun.lmp` file.
-
-In this stage multiple calculation directories are set up, one for each Thermodynamic Integration point:
+The `prod_data.lmp` file has been copied in from the previous calculation and named `data.lmp`. The directory also contains an `input_run.lmp` file and an `input_rerun.lmp` file. There are also multiple `lambda_*/` directories set up, one for each Thermodynamic Integration point:
 
 ```
 lambda_0.125
@@ -331,15 +304,11 @@ delta_minus/
 delta_plus/
 ```
 
-The `data.lmp` file is a symlink to the `data.lmp` file in the parent directory. The same `data.lmp` **MUST** be used for **ALL** Thermodynamic Integration calculations to maintain consistency.
-
-The `input.lmp` file is a symlink to the `input_run.lmp` file in the parent directory.
-
-The `potential.lmp` is set up for the NaCl system and the variable `ein_lambda` has been set according to the directory name. The variable `pot_lambda` is kept at 1.0 for this stage.
+The `data.lmp` file is a symlink to the `data.lmp` file in the parent directory. The same `data.lmp` **MUST** be used for **ALL** Thermodynamic Integration calculations to maintain consistency. The `input.lmp` file is a symlink to the `input_run.lmp` file in the parent directory. The `potential.lmp` is set up for the NaCl system and the variable `ein_lambda` has been set according to the directory name. The variable `pot_lambda` is kept at 1.0 throughout this stage.
 
 LAMMPS is run in each `lambda_*/` directory.
 
-The output of the simulation gives the average potential energy and a compressed trajectory file called `prod_traj.lmp.gz`.
+The outputs of the simulations give the average potential energy and a compressed trajectory file called `prod_traj.lmp.gz`.
 
 Inside the `lambda_*/delta_*` directories are several files:
 
@@ -350,17 +319,11 @@ prod_traj.lmp.gz -> ../prod_traj.lmp.gz
 potential.lmp
 ```
 
-The `data.lmp` file is a symlink to the same file as used in the `lambda_*/` calculations.
+The `data.lmp` file is a symlink to the same file as used in the `lambda_*/` calculations. The `input.lmp` file is a symlink to the `input_rerun.lmp` file in the top parent directory. The `prod_traj.lmp.gz` file is a symlink to the newly produced trajectory in the parent `lambda_*/` directory. The `potential.lmp` file is identical to the version in the parent `lambda_*/` directory except for the variable `ein_delta` being set to -0.01 in `delta_minus/` and 0.01 in `delta_plus`.
 
-The `input.lmp` file is a symlink to the `input_rerun.lmp` file in the top parent directory.
+LAMMPS is run in each `lambda_*/delta_*` directory.
 
-The `prod_traj.lmp.gz` file is a symlink to the newly produced trajectory in the parent `lambda_*/` directory.
-
-The `potential.lmp` file is identical to the version in the parent `lambda_*/` directory except for the variable `ein_delta` being set to -0.01 in `delta_minus/` and 0.01 in `delta_plus`.
-
-Running LAMMPS in each `lambda_*/delta_*` directory gives an average potential energy of the `lambda_*/` trajectory with the perturbed potential.
-
-Once these values have been extracted the following table is formed and $\frac{\partial H(\lambda)}{\partial \lambda}$ calculated as described in the [Thermodynamic Integration](#Thermodynamic-Integration) section:
+The outputs give an average potential energy of the `lambda_*/delta_*` trajectory with the perturbed potential. Once these values have been extracted the following table is formed and $\frac{\partial H(\lambda)}{\partial \lambda}$ calculated as described in the [Thermodynamic Integration](#Thermodynamic-Integration) section:
 
 | $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
