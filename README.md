@@ -7,9 +7,9 @@ $$\gamma_{Interface} = \gamma_{Liquid} + \frac{\Delta F_{Bulk}^{Ein.} - \Delta F
 
 Where 
 
-Transformation of the solid bulk and slab is achieved via [Thermodynamic Integration](#-Thermodynamic-Integration).
+Transformation of the solid bulk and slab is achieved via [Thermodynamic Integration](#Thermodynamic-Integration).
 
-The IFE of a liquid is more efficiently calculated via the [Kirkwood-Buff method](#-The-Kirkwood-Buff-Method).
+The IFE of a liquid is more efficiently calculated via the [Kirkwood-Buff method](#The-Kirkwood-Buff-Method).
 
 Full details available at [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130).
 
