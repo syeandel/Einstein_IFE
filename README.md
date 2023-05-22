@@ -1,15 +1,15 @@
 # Einstein_IFE
 This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals. The general idea is to use an Einstein crystal as a reference state to which the solid bulk and slab may be easily transformed into. As the free energy of an Einstein crystal does not depend upon the cartesian positions of the constituent atoms an explicit reconstruction is avoided.
 
-
-
 $$\gamma_{Interface} = \gamma_{Liquid} + \frac{\Delta F_{Bulk}^{Ein.} - \Delta F_{Slab}^{Ein.}}{2A}$$
 
-Where 
+Where $\gamma_{Interface}$ is the IFE of the interface, $\gamma_{Liquid}$ is the IFE (surface tension) of the liquid with vacuum, $\frac{\Delta F_{Bulk}^{Ein.}$ is the free energy required to transform the solid bulk into an Einstein crystal (of the same stoichiometry as the slab), $\Delta F_{Slab}^{Ein.}$ is the free energy required to transform the slab into an Einstein crystal and $A$ is the area of the interface.
 
 Transformation of the solid bulk and slab is achieved via [Thermodynamic Integration](#Thermodynamic-Integration).
 
 The IFE of a liquid is more efficiently calculated via the [Kirkwood-Buff method](#The-Kirkwood-Buff-Method).
+
+A [worked example](#A-Worked-Example) is available below.
 
 Full details available at [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130).
 
@@ -45,11 +45,20 @@ $$\delta(\lambda) = 0.01 \times f(\lambda)$$
 
 ## The Kirkwood-Buff Method
 
+In a liquid the IFE is equivalent to the surface tension, as described by the Shuttleworth equation. Therefore the IFE can be calculated much more efficiently via methods other than Thermodynamic Integration. The method of Kirkwood and Buff relates the surface tension to fluctuations in the local pressure tensor:
+
 $$\gamma_{Liquid} = \frac{1}{2} \int_{0}^{L_{x}} [P_{xx} - 0.5(P_{yy}+P_{zz})] \,dx$$
 
-Where $\gamma_{Liquid}$ is the surface tension of the liquid, $L_x$ is the length of the simulation cell in the $x$ direction and $P_{xx}$, $P_{yy}$ and $P_{zz}$ are the diagonal components of the pressure tensor. The integral is performed numerically by dividing the simulation cell into thin slices over the perpendicular direction $x$ and computing the average pressure tensor in each slice. The prefactor of $1/2$ accounts for the presence of two liquid/vacuum interfaces.
+Where $\gamma_{Liquid}$ is the surface tension of the liquid, $L_x$ is the length of the simulation cell in the $x$ direction and $P_{xx}$, $P_{yy}$ and $P_{zz}$ are the diagonal components of the pressure tensor. The integral is performed numerically by dividing the simulation cell into thin slices over the perpendicular direction $x$ and computing the average pressure tensor in each slice. The prefactor of $1/2$ accounts for the presence of two liquid/vacuum interfaces in a slab configuration.
 
-Note the KB method is applicable only to fluid interfaces and cannot be used for solids.
+Note that the Kirkwood-Buff method is applicable only to fluid interfaces and **cannot** be used for interfaces with solids.
 
 ## A Worked Example
+
+
+
+
+
+
+
 
