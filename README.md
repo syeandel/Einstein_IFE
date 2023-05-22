@@ -1,9 +1,17 @@
 # Einstein_IFE
-This repository contains example LAMMPS scripts for computing Interfacial Free Energies via Einstein Crystals.
+This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals. The general idea is to use an Einstein crystal as a reference state to which the solid bulk and slab may be easily transformed into. As the free energy of an Einstein crystal does not depend upon the cartesian positions of the constituent atoms an explicit reconstruction is avoided.
+
+
 
 $$\gamma_{Interface} = \gamma_{Liquid} + \frac{\Delta F_{Bulk}^{Ein.} - \Delta F_{Slab}^{Ein.}}{2A}$$
 
-[DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130)
+Where 
+
+Transformation of the solid bulk and slab is achieved via [Thermodynamic Integration](#-Thermodynamic-Integration).
+
+The IFE of a liquid is more efficiently calculated via the [Kirkwood-Buff method](#-The-Kirkwood-Buff-Method).
+
+Full details available at [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130).
 
 ## Thermodynamic Integration
 
