@@ -110,6 +110,8 @@ variable lsample equal         100     # lattice vector sampling frequency (step
 variable traj equal              0     # 1 = print traj files
 ```
 
+The `isotropy` variable is particularly important as it must be set appropriately for the system being equilibrated.
+
 ### input_run.lmp
 
 The `input_run.lmp` script reads a `data.lmp` file.  An NVT equilibration simulation is performed followed by an NVT production simulation that calculates the average potential energy alongside a compressed trajectory (`prod_traj.lmp.gz`) sampled at the same points. These settings are available at the top of the script:
@@ -188,11 +190,16 @@ A significantly more complex `potential.lmp` file for CaSO<sub>4</sub>.xH<sub>2<
 
 ### KB.lmp
 
+The `KB.lmp` script implements the [Kirkwood-Buff method](#The-Kirkwood-Buff-Method). The only variable to set is:
 
+```
+#set slice fraction
+variable slice_frac equal 0.00025
+```
 
+Which controls the fractional size (compared to the simulation box) of the slices used in the method.
 
-
-
+As the simulation runs the current integral (surface tension) is written to a file called `FE_integral.txt`.
 
 ### slab_correction.lmp
 
@@ -209,6 +216,34 @@ It is also prudent to implement walls in the `input.lmp` script to prevent trans
 fix x_walls all wall/lj93 xlo EDGE 0.001 3.5 3.0 xhi EDGE 0.001 3.5 3.0 units box pbc yes	# wall repulsion for slabs
 include slab_correction.lmp									# slab dipole correction
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## A Worked Example
 
