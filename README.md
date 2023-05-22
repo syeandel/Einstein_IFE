@@ -51,22 +51,11 @@ The derivative $\frac{\partial H(f(\lambda))}{\partial f(\lambda)}$ is calculate
 
 $$\frac{\partial H(f(\lambda))}{\partial f(\lambda)} \approx \frac{H(f(\lambda) + \delta(\lambda)) - H(f(\lambda) - \delta(\lambda))}{2 \delta(\lambda)}$$
 
-
-
-
-
-
-<!--- The total kinetic energy is our calculations is constant so we can use the internal energy, $U$ instead of $H$. --->
-
-
-
-
-
-
-
 We set $\delta$ to be a function of $\lambda$ to avoid numerical issues which may occur for small values of $\lambda$ when using a fixed $\delta$. Setting $\delta$ to be 1% the value of $f(\lambda)$ generally works well:
 
 $$\delta(\lambda) = 0.01 \times f(\lambda)$$
+
+<!--- The total kinetic energy in our calculations is constant so we can use the internal energy, $U$ instead of $H$. --->
 
 The numerical integration may be performed with any quadrature rule; however there are two main considerations. Using a fixed number of calculation points and a simple quadrature scheme like the the Trapezoidal rule or Simpson's rule will allow the calculation points to be easily taskfarmed on large HPC machines. Alternatively, an adaptive quadrature rule may result in improved convergence with fewer calculation points, at the expense of not knowing which points to include *a priori*. An adaptive method which suggests batches of calculation points is likely to be most efficient.
 
@@ -243,13 +232,11 @@ include slab_correction.lmp									# slab dipole correction
 
 
 
-
-
 ## A Worked Example
 
 In this example the IFE of the NaCl {100} surface with pure water is calculated. The files may be found in [examples/NaCl_water_example/](examples/NaCl_water_example/). These example directories make extensive use of symlinks which enables efficient use of storage space and also helps to ensure consistency between calculations.
 
-The worked example provided here uses a very minimal number of Thermodynamic Integration points (values of $\lambda$). Full publication quality calculations **WILL** require many additional points. Alongside the free energy integrals calculated in this example, fully converged values using 128 points and Romberg's method will be presented in paranthesis.
+The worked example provided here uses a very minimal number of Thermodynamic Integration points (values of $\lambda$). Full publication quality calculations **WILL** require many additional points. Alongside the free energy integrals calculated in this example, fully converged values using 128 points and Romberg's method will be presented in parentheses.
 
 The three components required for the calculation of IFEs are:
 
@@ -267,66 +254,139 @@ The first task is to compute the free energy of transforming NaCl bulk into an E
 4. Deactivate interactions
 5. Compute free energy per formula unit
 
-#### Calculate average lattice vectors
 
-In this calculation a cubic unit cell of NaCl is read from `data.lmp` and expanded 12x in each dimension. The simulation cell is then run under the chosen conditions in an isotropic NPT ensemble for 0.6 ns. The first 0.1 ns is discarded and then the lattice vectors are recorded every 100 fs. At the end of the simulation the average lattice vectors are calculated and a new `lattequi_data.lmp` is written with the average lattice vectors imposed.
+
+
+
+
+
+
+
+
+
+
+#### Calculate average lattice vectors
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/1_lattice_equilibration](examples/NaCl_water_example/1_bulk/1_lattice_equilibration).
 
+In this calculation a cubic unit cell of NaCl is read from `data.lmp` and expanded 12x in each dimension. The simulation cell is then run under the chosen conditions in an isotropic NPT ensemble for 0.6 ns. The first 0.1 ns is discarded and then the lattice vectors are recorded every 100 fs. At the end of the simulation the average lattice vectors are calculated and a new `lattequi_data.lmp` is written with the average lattice vectors imposed.
+
+
+
+
+
+
+
+
 #### Calculate enthalpy
-
-This stage is optional but useful if the interfacial enthalpy is desired at a later date.
-
-First, the `lattequi_data.lmp` file is copied from the previous stage and renamed `data.lmp`. 
-
-
-
-
-
-
-
-
-
-
-
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/2_enthalpy](examples/NaCl_water_example/1_bulk/2_enthalpy).
 
+This stage is optional but useful if the interfacial enthalpy is desired at a later date.
+
+The `lattequi_data.lmp` file has been copied from the previous stage and renamed `data.lmp`. 
+
+LAMMPS is run and an average potential energy is calculated and a new data file called `prod_data.lmp` is produced.
+
+
+
+
+
+
+
+
+
+
+
+
 #### Activate harmonic wells
 
-In this stage multiple calculations are set up, one for each Thermodynamic Integration point of interest.
+The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/3_wells_on](examples/NaCl_water_example/1_bulk/3_wells_on).
 
-The `prod_data.lmp` is copied in from the previous calculation and named `data.lmp`. The same `data.lmp` **MUST** be used for **ALL** Thermodynamic Integration calculations to maintain consistency. This is because the scripts set the minima of the harmonic well for each atom is set to be at it's initial position, and drift of the harmonic well between points will result in an inconsistent pathway. Here the consistency has been assured by the use of symlinks in each sub-directory which point to the same `data.lmp`.
+The `prod_data.lmp` file has been copied in from the previous calculation and named `data.lmp`.
 
-Each sub-directory is labelled with the value of $\lambda$ that has been set, e.g. `lambda_0.125/`. All sub-directories are identical save for the `potential.lmp` file which has a different value set for the variable `ein_lambda` which controls the point along the thermodynamic pathway. The value of the other important variable `pot_lambda` is kept at 1.0 for this stage indicating the interactions are still at full strength.
+The directory also contains an `input_run.lmp` file and an `input_rerun.lmp` file.
 
-Running LAMMPS in each sub-directory performs a 100 ps NVT equilibration phase, followed by a 500 ps NVT production phase.
+In this stage multiple calculation directories are set up, one for each Thermodynamic Integration point:
 
-During the production phase the potential energy is sampled every 1 ps and a trajectory is recorded at the same time. The average potential energy is printed at the end of the simulation and the trajectory at the same sample points is written to `prod_traj.lmp.gz`.
+```
+lambda_0.125
+lambda_0.250
+lambda_0.375
+lambda_0.500
+lambda_0.625
+lambda_0.750
+lambda_0.875
+```
 
+Simulations do not need to be performed for $\lambda = 0.0$ or $1.0$ as $\frac{\partial H(\lambda)}{\partial \lambda}$ is analytically zero for these values.
 
+Inside each `lambda_*/` directory are several files and two sub-directories:
 
+```
+data.lmp -> ../data.lmp
+input.lmp -> ../input_run.lmp
+potential.lmp
+delta_minus/
+delta_plus/
+```
 
+The `data.lmp` file is a symlink to the `data.lmp` file in the parent directory. The same `data.lmp` **MUST** be used for **ALL** Thermodynamic Integration calculations to maintain consistency.
 
+The `input.lmp` file is a symlink to the `input_run.lmp` file in the parent directory.
 
+The `potential.lmp` is set up for the NaCl system and the variable `ein_lambda` has been set according to the directory name. The variable `pot_lambda` is kept at 1.0 for this stage.
 
+LAMMPS is run in each `lambda_*/` directory.
 
+The output of the simulation gives the average potential energy and a compressed trajectory file called `prod_traj.lmp.gz`.
 
+Inside the `lambda_*/delta_*` directories are several files:
 
+```
+data.lmp -> ../../data.lmp
+input.lmp -> ../../input_rerun.lmp
+prod_traj.lmp.gz -> ../prod_traj.lmp.gz
+potential.lmp
+```
 
+The `data.lmp` file is a symlink to the same file as used in the `lambda_*/` calculations.
 
+The `input.lmp` file is a symlink to the `input_rerun.lmp` file in the top parent directory.
+
+The `prod_traj.lmp.gz` file is a symlink to the newly produced trajectory in the parent `lambda_*/` directory.
+
+The `potential.lmp` file is identical to the version in the parent `lambda_*/` directory except for the variable `ein_delta` being set to -0.01 in `delta_minus/` and 0.01 in `delta_plus`.
+
+Running LAMMPS in each `lambda_*/delta_*` directory gives an average potential energy of the `lambda_*/` trajectory with the perturbed potential.
+
+Once these values have been extracted the following table is formed and $\frac{\partial H(\lambda)}{\partial \lambda}$ calculated as described in the [Thermodynamic Integration](#Thermodynamic-Integration) section:
 
 | $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
-| --- | ---| --- | --- | --- | --- | --- | --- |
-0.0000 | 0.0 | 0.0 | 0.0 |  |  |  | 0.0 |
-0.1250 | 0.00248228 | 0.090159774 | 2.48228E-05 | -56241.20199 | -56241.08048 | -56240.95891 | 441.4538144 |
-0.2500 | 0.048927307 | 0.778656006 | 0.000489273 | -56161.86652 | -56160.34391 | -56158.82123 | 2423.224422 |
-0.3750 | 0.216618016 | 1.901015639 | 0.00216618 | -56021.43951 | -56018.02223 | -56014.60486 | 2999.006927 |
-0.5000 | 0.5 | 2.4609375 | 0.005 | -55923.06645 | -55918.6806 | -55914.29455 | 2158.710143 |
-0.6250 | 0.783381984 | 1.901015639 | 0.00783382 | -55874.67204 | -55869.91453 | -55865.15704 | 1154.492179 |
-0.7500 | 0.951072693 | 0.778656006 | 0.009510727 | -55855.71546 | -55850.83414 | -55845.95246 | 399.6548102 |
-0.8750 | 0.99751772 | 0.090159774 | 0.009975177 | -55851.28348 | -55846.37467 | -55841.46615 | 44.36653954 |
-1.0000 | 1 | 0.0 | 0.01 |  |  |  | 0.0 |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| 0.000 | 0.00 | 0.00 | 0.00 |  |  |  | 0.00 |
+| 0.125 | 0.00 | 0.09 | 0.00 | -56241.20 | -56241.08 | -56240.96 | 441.45 |
+| 0.250 | 0.05 | 0.78 | 0.00 | -56161.87 | -56160.34 | -56158.82 | 2423.22 |
+| 0.375 | 0.22 | 1.90 | 0.00 | -56021.44 | -56018.02 | -56014.60 | 2999.01 |
+| 0.500 | 0.50 | 2.46 | 0.01 | -55923.07 | -55918.68 | -55914.29 | 2158.71 |
+| 0.625 | 0.78 | 1.90 | 0.01 | -55874.67 | -55869.91 | -55865.16 | 1154.49 |
+| 0.750 | 0.95 | 0.78 | 0.01 | -55855.72 | -55850.83 | -55845.95 | 399.65 |
+| 0.875 | 1.00 | 0.09 | 0.01 | -55851.28 | -55846.37 | -55841.47 | 44.37 |
+| 1.000 | 1.00 | 0.00 | 0.01 |  |  |  | 0.00 |
+
+The free energy of this transformation, calculated with the Trapezoidal rule, is 1202.61 eV (1200.10 eV).
+
+
+
+
+
+
+
+
+
+
+
+
 
 #### Deactivate interactions
 
@@ -363,7 +423,9 @@ This value only needs to be calculated once and can be re-used for all NaCl IFE 
 
 ### NaCl Slab to Einstein Crystal
 
-In the slab calculations the correction of [Balleneggar *et al.*](https://doi.org/10.1063/1.3216473) is applied. This correction is only strictly required for slabs with a dipole or charge, but has minimal computational overhead and is also included here as an example.
+The slab calculation is performed almost identically to the NaCl bulk calculation. Consequntly, only the small modifications required to run on slabs will be covered here.
+
+In all the slab calculations the correction of [Balleneggar *et al.*](https://doi.org/10.1063/1.3216473) is applied. This correction is only strictly required for slabs with a dipole or charge, but has minimal computational overhead and is also included here as an example.
 
 
 
