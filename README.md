@@ -270,19 +270,19 @@ The first task is to compute the free energy of transforming NaCl bulk into an E
 
 #### Calculate average lattice vectors
 
-The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/1_lattice_equilibration](examples/NaCl_water_example/1_bulk/1_lattice_equilibration).
+The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/1_lattice_equilibration/](examples/NaCl_water_example/1_bulk/1_lattice_equilibration/).
 
 In this calculation a cubic unit cell of NaCl is read from `data.lmp` and the `input_lattequi.lmp` script is used to create a supercell with the correct average lattice vectors for the conditions specified.
 
 #### Calculate enthalpy
 
-The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/2_enthalpy](examples/NaCl_water_example/1_bulk/2_enthalpy).
+The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/2_enthalpy/](examples/NaCl_water_example/1_bulk/2_enthalpy/).
 
 This stage is optional but useful if the interfacial enthalpy is desired at a later date. The `lattequi_data.lmp` file has been copied from the previous stage and renamed `data.lmp`. LAMMPS is run and an average potential energy is calculated and a new data file called `prod_data.lmp` is produced.
 
 #### Activate harmonic wells
 
-The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/3_wells_on](examples/NaCl_water_example/1_bulk/3_wells_on).
+The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/3_wells_on/](examples/NaCl_water_example/1_bulk/3_wells_on/).
 
 The `prod_data.lmp` file has been copied in from the previous calculation and named `data.lmp`. The directory also contains an `input_run.lmp` file and an `input_rerun.lmp` file. There are also multiple `lambda_*/` directories set up, one for each Thermodynamic Integration point:
 
@@ -345,7 +345,7 @@ The free energy of confining the atoms in harmonic wells, calculated with the Tr
 
 #### Deactivate interactions
 
-The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/4_potential_off](examples/NaCl_water_example/1_bulk/4_potential_off).
+The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/4_potential_off/](examples/NaCl_water_example/1_bulk/4_potential_off/).
 
 These calculations **MUST** use the same data file as in `3_wells_on`. This file has been copied in.
 
@@ -385,7 +385,7 @@ This value only needs to be calculated once and can be re-used for all NaCl IFE 
 
 ### NaCl Slab to Einstein Crystal
 
-The files to perform these calculations are located in [examples/NaCl_water_example/2_slab](examples/NaCl_water_example/2_slab).
+The files to perform these calculations are located in [examples/NaCl_water_example/2_slab/](examples/NaCl_water_example/2_slab/).
 
 The slab calculation is performed almost identically to the NaCl bulk calculation. There are only 2 differences:
 
