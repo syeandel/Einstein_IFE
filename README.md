@@ -61,13 +61,31 @@ The numerical integration may be performed with any quadrature rule; however the
 
 ### The Kirkwood-Buff Method
 
-In a liquid the IFE is equivalent to the surface tension, as described by the [Shuttleworth equation](https://doi.org/10.1088/0370-1298/63/5/302). Therefore the IFE can be calculated much more efficiently via methods other than Thermodynamic Integration. The method of Kirkwood and Buff relates the surface tension to fluctuations in the local pressure tensor:
+In a liquid the IFE is equivalent to the surface tension, as described by the [Shuttleworth equation](https://doi.org/10.1088/0370-1298/63/5/302). Therefore the IFE can be calculated much more efficiently via methods other than Thermodynamic Integration. The method of [Kirkwood and Buff](https://doi.org/10.1063/1.1747248) relates the surface tension to fluctuations in the local pressure tensor:
 
 $$\gamma_{Liquid} = \frac{1}{2} \int_{0}^{L_{x}} [P_{xx} - 0.5(P_{yy}+P_{zz})] \,dx$$
 
 Where $\gamma_{Liquid}$ is the surface tension of the liquid, $L_x$ is the length of the simulation cell in the $x$ direction and $P_{xx}$, $P_{yy}$ and $P_{zz}$ are the diagonal components of the pressure tensor. The integral is performed numerically by dividing the simulation cell into thin slices over the perpendicular direction $x$ and computing the average pressure tensor in each slice. The prefactor of $1/2$ accounts for the presence of two liquid/vacuum interfaces in a slab configuration.
 
 Note that the Kirkwood-Buff method is applicable only to fluid interfaces and **CANNOT** be used for interfaces with solids.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## The Scripts
 
@@ -175,7 +193,7 @@ Further down the script the interaction potential of the system is given. The in
 
 A basic `potential.lmp` file for the NaCl/water interfaces is located at [scripts/potential_NaCl.lmp](scripts/potential_NaCl.lmp).
 
-A significantly more complex `potential.lmp` file for CaSO<sub>4</sub>.xH<sub>2</sub>O/solution interfaces is included in [scripts/potential_CaSO4.lmp](scripts/potential_CaSO4.lmp).
+A significantly more complex `potential.lmp` file for CaSO<sub>4</sub>.xH<sub>2</sub>O/solution interfaces is located at [scripts/potential_CaSO4.lmp](scripts/potential_CaSO4.lmp).
 
 ### KB.lmp
 
@@ -228,10 +246,6 @@ include slab_correction.lmp									# slab dipole correction
 
 
 
-
-
-
-
 ## A Worked Example
 
 In this example the IFE of the NaCl {100} surface with pure water is calculated. The files may be found in [examples/NaCl_water_example/](examples/NaCl_water_example/). These example directories make extensive use of symlinks which enables efficient use of storage space and also helps to ensure consistency between calculations.
@@ -253,16 +267,6 @@ The first task is to compute the free energy of transforming NaCl bulk into an E
 3. Activate harmonic wells
 4. Deactivate interactions
 5. Compute free energy per formula unit
-
-
-
-
-
-
-
-
-
-
 
 #### Calculate average lattice vectors
 
@@ -327,89 +331,66 @@ The outputs give an average potential energy of the `lambda_*/delta_*` trajector
 
 | $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 0.000 | 0.00000000 | 0.00000000 | 0.00000000 |  |  |  | 0.00 |
-| 0.125 | 0.00248228 | 0.09015977 | 0.00002482 | -56241.20 | -56241.08 | -56240.96 | 441.45 |
-| 0.250 | 0.04892731 | 0.77865601 | 0.00048927 | -56161.87 | -56160.34 | -56158.82 | 2423.22 |
-| 0.375 | 0.21661802 | 1.90101564 | 0.00216618 | -56021.44 | -56018.02 | -56014.60 | 2999.01 |
-| 0.500 | 0.50000000 | 2.46093750 | 0.00500000 | -55923.07 | -55918.68 | -55914.29 | 2158.71 |
-| 0.625 | 0.78338198 | 1.90101564 | 0.00783382 | -55874.67 | -55869.91 | -55865.16 | 1154.49 |
-| 0.750 | 0.95107269 | 0.77865601 | 0.00951073 | -55855.72 | -55850.83 | -55845.95 | 399.65 |
-| 0.875 | 0.99751772 | 0.09015977 | 0.00997518 | -55851.28 | -55846.37 | -55841.47 | 44.37 |
-| 1.000 | 1.00000000 | 0.00000000 | 0.01000000 |  |  |  | 0.00 |
+| 0.0000 | 0.00000000 | 0.00000000 | 0.00000000 |  |  |  | 0.00 |
+| 0.1250 | 0.00248228 | 0.09015977 | 0.00002482 | -56241.20 | -56241.08 | -56240.96 | 441.45 |
+| 0.2500 | 0.04892731 | 0.77865601 | 0.00048927 | -56161.87 | -56160.34 | -56158.82 | 2423.22 |
+| 0.3750 | 0.21661802 | 1.90101564 | 0.00216618 | -56021.44 | -56018.02 | -56014.60 | 2999.01 |
+| 0.5000 | 0.50000000 | 2.46093750 | 0.00500000 | -55923.07 | -55918.68 | -55914.29 | 2158.71 |
+| 0.6250 | 0.78338198 | 1.90101564 | 0.00783382 | -55874.67 | -55869.91 | -55865.16 | 1154.49 |
+| 0.7500 | 0.95107269 | 0.77865601 | 0.00951073 | -55855.72 | -55850.83 | -55845.95 | 399.65 |
+| 0.8750 | 0.99751772 | 0.09015977 | 0.00997518 | -55851.28 | -55846.37 | -55841.47 | 44.37 |
+| 1.0000 | 1.00000000 | 0.00000000 | 0.01000000 |  |  |  | 0.00 |
 
-The free energy of this transformation, calculated with the Trapezoidal rule, is 1202.61 eV (1200.10 eV).
-
-
-
-
-
-
-
-
-
-
-
-
+The free energy of confining the atoms in harmonic wells, calculated with the Trapezoidal rule, is 1202.61 eV (128-point converged value: 1200.10 eV).
 
 #### Deactivate interactions
 
+The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/4_potential_off](examples/NaCl_water_example/1_bulk/4_potential_off).
 
+These calculations **MUST** use the same data file as in `3_wells_on`. This file has been copied in.
 
+The directories are set up as in `3_wells_on` but now in the `potential.lmp` file the variable `ein_lambda` is set to 1.0 indicating the harmonic wells are fully activated, and the variable `pot_lambda` is varied.
 
+**Note that the free energy calculated here is to activate the interactions and so must be negated in the final calculation.**
 
+The calculations are run as before, with `lambda_*/` being performed first, follwed by the perturbation in `lambda_*/delta_*/`.
 
+The following data is obtained:
 
+| $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+0.0000 | 0.00000000 | 0.00000000 | 0.00000000 |  |  |  | 0.00 |
+0.1250 | 0.00248228 | 0.09015977 | 0.00002482 | 545.07 | 545.16 | 545.24 | 312.62 |
+0.2500 | 0.04892731 | 0.77865601 | 0.00048927 | 568.58 | 567.57 | 566.52 | -1640.24 |
+0.3750 | 0.21661802 | 1.90101564 | 0.00216618 | -1447.39 | -1495.13 | -1543.39 | -42124.77 |
+0.5000 | 0.50000000 | 2.46093750 | 0.00500000 | -12354.88 | -12634.07 | -12916.25 | -138147.92 |
+0.6250 | 0.78338198 | 1.90101564 | 0.00783382 | -32718.07 | -33421.59 | -34132.50 | -171618.46 |
+0.7500 | 0.95107269 | 0.77865601 | 0.00951073 | -49239.01 | -50285.05 | -51342.03 | -86088.38 |
+0.8750 | 0.99751772 | 0.09015977 | 0.00997518 | -54404.21 | -55557.02 | -56722.03 | -10474.72 |
+1.0000 | 1.00000000 | 0.00000000 | 0.01000000 |  |  |  | 0.00 |
 
-
-
-
-
+The free energy of deactivating the interactions, calculated with the Trapezoidal rule, is 56222.73 eV (128-point converged value: 56213.12 eV).
 
 #### Compute free energy per formula unit
 
-The free energy of transforming bulk NaCl into an Einstein crystal is given by the free energy of activating harmonic wells plus the free energy of deactivating the interactions. Dividing by the number of NaCl formula units gives a value per formular unit that may be scaled to match any slab calculation.
+The free energy of transforming bulk NaCl into an Einstein crystal is given by the free energy of activating harmonic wells minus the free energy of activating the interactions:
 
+$$\Delta F_{Bulk}^{Ein.} = 1202.61 + 56222.73 = 57425.34 \textrm{ eV}$$
 
+Dividing by the number of NaCl formula units gives a free energy per formula unit that may be scaled to match any slab calculation:
 
-
-
-
-
-
-
-
-
-
-
+$$\Delta f_{Bulk}^{Ein.} = \frac{\Delta F_{Bulk}^{Ein.}}{N_{NaCl}} = \frac{57425.34}{6912} = 8.308065 \textrm{ eV/f.u.}$$
 
 This value only needs to be calculated once and can be re-used for all NaCl IFE calculations.
 
 ### NaCl Slab to Einstein Crystal
 
-The slab calculation is performed almost identically to the NaCl bulk calculation. Consequntly, only the small modifications required to run on slabs will be covered here.
+The files to perform these calculations are located in [examples/NaCl_water_example/2_slab](examples/NaCl_water_example/2_slab).
 
-In all the slab calculations the correction of [Balleneggar *et al.*](https://doi.org/10.1063/1.3216473) is applied. This correction is only strictly required for slabs with a dipole or charge, but has minimal computational overhead and is also included here as an example.
+The slab calculation is performed almost identically to the NaCl bulk calculation. There are only 2 differences:
 
-
-
-
-
-
-
-
-
-#### Calculate average lattice vectors
-
-
-
-
-
-
-
-
-
-
-#### Calculate enthalpy
+1. The lattice equilibration is performed with the $x$, $xy$ and $xz$ components locked. This maintains the vacuum gap between the periodic images of the slab.
+2. The `slab_correction.lmp' script has been included. This correction is only strictly required for slabs with a dipole or charge, but has minimal computational overhead and is also included here as an example. Alongside this there is an additional wall to prevent molecules translating across the periodic boundary perpendicular to the slab.
 
 
 
@@ -422,6 +403,25 @@ In all the slab calculations the correction of [Balleneggar *et al.*](https://do
 
 #### Activate harmonic wells
 
+| $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+
+
+
+
+
+
+
+
+
+The free energy of confining the atoms in harmonic wells, calculated with the Trapezoidal rule, is XXXX eV (128-point converged value: XXXX eV).
+
+
+
+
+
+
 
 
 
@@ -432,6 +432,42 @@ In all the slab calculations the correction of [Balleneggar *et al.*](https://do
 
 
 #### Deactivate interactions
+
+| $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+
+
+
+
+
+
+
+
+
+The free energy of deactivating the interactions, calculated with the Trapezoidal rule, is XXXX eV (128-point converged value: XXXX eV).
+
+
+
+
+
+
+
+
+
+
+
+#### Compute free energy
+
+The free energy of transforming the NaCl slab into an Einstein crystal and leaving a vacuum gap with 2 liquid/vacuum surfaces is:
+
+
+
+$$\Delta F_{Slab}^{Ein.} = XXXX + XXXX = XXXX \textrm{ eV}$$
+
+
+
+
 
 
 
@@ -452,6 +488,8 @@ The files may be found in [examples/KB_water_tension/](examples/KB_water_tension
 
 
 
+
+### Calculating the Interfacial Free Energy
 
 
 
