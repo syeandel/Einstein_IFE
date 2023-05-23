@@ -379,13 +379,13 @@ The free energy of **deactivating** the interactions, calculated with the Trapez
 
 The free energy of transforming bulk NaCl into an Einstein crystal is given by the free energy of activating harmonic wells minus the free energy of activating the interactions:
 
-$$\Delta F_{Bulk}^{Ein.} = 1202.61 + 56222.73 = 57425.35 \textrm{ eV}$$
+$$\Delta F_{Bulk}^{Ein.} = 1202.61 + 56222.73 = 57425.34 \textrm{ eV}$$
 
-Dividing by the number of NaCl formula units gives a free energy per formula unit that may be scaled to match any slab calculation:
+Dividing by the number of NaCl formula units of NaCl in the bulk cell gives a free energy per formula unit:
 
-$$\Delta f_{Bulk}^{Ein.} = \frac{\Delta F_{Bulk}^{Ein.}}{N_{NaCl}} = \frac{57425.35}{6912} = 8.308065 \textrm{ eV/f.u.}$$
+$$\Delta f_{Bulk}^{Ein.} = \frac{\Delta F_{Bulk}^{Ein.}}{N_{Bulk}} = \frac{57425.34}{6912} = 8.308064 \textrm{ eV/f.u.}$$
 
-This value only needs to be calculated once and can be re-used for all NaCl IFE calculations.
+This value only needs to be calculated once and can be re-scaled and used for all NaCl IFE calculations.
 
 ### NaCl Slab to Einstein Crystal
 
@@ -432,7 +432,7 @@ The free energy of **deactivating** the interactions, calculated with the Trapez
 
 The free energy of transforming the NaCl slab into an Einstein crystal and leaving a vacuum gap with 2 liquid/vacuum surfaces is:
 
-$$\Delta F_{Slab}^{Ein.} = 359.06 + 16226.33 = 16585.40 \textrm{ eV}$$
+$$\Delta F_{Slab}^{Ein.} = 359.06 + 16226.33 = 16585.39 \textrm{ eV}$$
 
 ### Water/Vacuum Surface Tension
 
@@ -460,9 +460,29 @@ The average value across the 5 runs is 0.0548 J/m<sup>2</sup> (4x larger surface
 
 ### Calculating the Interfacial Free Energy
 
+Now that all the required values have been calculated, the IFE may be derived.
 
-> **NOTE:** Conversion from eV/&#8491;<sup>2</sup> to J/m<sup>2</sup> is $\times 16.02176634$
+First we must scale $\Delta f_{Bulk}^{Ein.}$ to the same number of formula units as the slab:
 
+$$\Delta F_{Bulk}^{Ein.} = N_{Slab} \Delta f_{Bulk}^{Ein.} = 2000 \times 8.308064 = 16616.13 \textrm{ eV}$$
+
+Subtracting $\Delta F_{Slab}^{Ein.}$ from this number gives the free energy of converting the bulk solid into the slab in contact with the liquid:
+
+$$\Delta F_{Bulk}^{Slab} = \Delta F_{Bulk}^{Ein.} - \Delta F_{Slab}^{Ein.} = 16616.13 - 16585.39 = 30.74 \textrm{ eV}$$
+
+Next this value is divided by twice the surface area of the slab (due to two interfaces) to convert it to a free energy per area. For these simulations the surface area is 3333.21 &#8491;<sup>2</sup>.
+
+$$\gamma_{Solid} = \frac{\Delta F_{Bulk}^{Slab}}{2A} = \frac{30.74}{2 \times 3333.21} = 0.004611 \textrm{ eV/&#8491;}^2 = 0.0739 \textrm{ J/m}^2$$
+
+> **NOTE:** Conversion factor from eV/&#8491;<sup>2</sup> to J/m<sup>2</sup> is 16.02176634
+
+Finally, this value is added to the free energy to create the liquid/vacuum interface:
+
+$$\gamma_{Interface} = \gamma_{Liquid} + \gamma_{Solid} = 0.0548 + 0.0739 = 0.1287 \textrm{ J/m}^2$$
+
+> **NOTE:** $\gamma_{Solid}$ is the free energy per area to create the slab **in contact with the liquid**, replacing the vacuum. It **CANNOT** be interpreted as the free energy per area to create the slab/vacuum interface.
+
+The computed values of 0.1287 J/m<sup>2</sup> is extremely close to the fully converged value of 0.1281 J/m<sup>2</sup> due to a *miraculous* cancellation of errors.
 
 ## Final Comments
 
