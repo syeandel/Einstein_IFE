@@ -316,7 +316,7 @@ LAMMPS is run in each `lambda_*/` directory.
 
 The outputs of the simulations give the average potential energy and a compressed trajectory file called `prod_traj.lmp.gz`.
 
-Inside the `lambda_*/delta_*` directories are several files:
+Inside the `lambda_*/delta_*/` directories are several files:
 
 ```
 data.lmp -> ../../data.lmp
@@ -325,11 +325,11 @@ prod_traj.lmp.gz -> ../prod_traj.lmp.gz
 potential.lmp
 ```
 
-The `data.lmp` file is a symlink to the same file as used in the `lambda_*/` calculations. The `input.lmp` file is a symlink to the `input_rerun.lmp` file in the top parent directory. The `prod_traj.lmp.gz` file is a symlink to the newly produced trajectory in the parent `lambda_*/` directory. The `potential.lmp` file is identical to the version in the parent `lambda_*/` directory except for the variable `ein_delta` being set to -0.01 in `delta_minus/` and 0.01 in `delta_plus`.
+The `data.lmp` file is a symlink to the same file as used in the `lambda_*/` calculations. The `input.lmp` file is a symlink to the `input_rerun.lmp` file in the top parent directory. The `prod_traj.lmp.gz` file is a symlink to the newly produced trajectory in the parent `lambda_*/` directory. The `potential.lmp` file is identical to the version in the parent `lambda_*/` directory except for the variable `ein_delta` being set to -0.01 in `delta_minus/` and 0.01 in `delta_plus/`.
 
-LAMMPS is run in each `lambda_*/delta_*` directory.
+LAMMPS is run in each `lambda_*/delta_*/` directory.
 
-The outputs give an average potential energy of the `lambda_*/delta_*` trajectory with the perturbed potential. Once these values have been extracted the following table is formed and $\frac{\partial H(\lambda)}{\partial \lambda}$ calculated as described in the [Thermodynamic Integration](#Thermodynamic-Integration) section:
+The outputs give an average potential energy of the `lambda_*/delta_*/` trajectory with the perturbed potential. Once these values have been extracted the following table is formed and $\frac{\partial H(\lambda)}{\partial \lambda}$ calculated as described in the [Thermodynamic Integration](#Thermodynamic-Integration) section:
 
 | $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
