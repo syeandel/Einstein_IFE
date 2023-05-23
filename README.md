@@ -250,7 +250,9 @@ include slab_correction.lmp									# slab dipole correction
 
 In this example the IFE of the NaCl {100} surface with pure water is calculated. The files may be found in [examples/NaCl_water_example/](examples/NaCl_water_example/). These example directories make extensive use of symlinks which enables efficient use of storage space and also helps to ensure consistency between calculations.
 
-The worked example provided here uses a very minimal number of Thermodynamic Integration points (values of $\lambda$). Full publication quality calculations **WILL** require many additional points. Alongside the free energy integrals calculated in this example, fully converged values using 128 points and Romberg's method will be presented in parentheses.
+The worked example provided here uses a very minimal number of Thermodynamic Integration points (values of $\lambda$). Alongside the free energy integrals calculated in this example, fully converged values using 128 points and Romberg's method will be presented in parentheses.
+
+> **NOTE:** Full publication quality calculations **WILL** require many additional points.
 
 The three components required for the calculation of IFEs are:
 
@@ -436,14 +438,36 @@ $$\Delta F_{Slab}^{Ein.} = 359.06 + 16226.33 = 16585.40 \textrm{ eV}$$
 
 The files for these calculations may be found in [examples/KB_water_tension/](examples/KB_water_tension/).
 
+This directory contains 5 sub-diredctories, labelled `run_{1..5}`. Each sub-directory contains an identical `data.lmp` file for a pure water slab with 2 water/vacuum interfaces. The `input.lmp` file in each sub-directory is identical except for the value of the variable `seed`, which will allow each run to explore a separate trajectory.
 
+> **NOTE:** For a system such as pure water this is an acceptable setup as all water molecules are indistinguishable and the phase space can be rapidly explored. For more complex systems like solutions it is prudent to start each run from a different starting configurations (i.e. distribution of ions in solution).
 
+LAMMPS is run in each sub-directory.
 
+Each run will produce a file called `FE_integral.txt' which prints the current value of the surface tension in J/m<sup>2</sup>.
 
+Collecting the final values from each `FE_integral.txt` into a table:
 
+| Run | Surf. Tension (J/m<sup>2</sup>) |
+| :---: | :---: |
+| 1 | 0.0599 |
+| 2 | 0.0483 |
+| 3 | 0.0426 |
+| 4 | 0.0706 |
+| 5 | 0.0526 |
 
+The average value across the 5 runs is 0.0548 J/m<sup>2</sup> (4x larger surface area and 10x runs converged value: 0.0581 J/m<sup>2</sup>).
 
 ### Calculating the Interfacial Free Energy
+
+
+> **NOTE:** Conversion from eV/&#8491;<sup>2</sup> to J/m<sup>2</sup> is $\times 16.02176634$
+
+
+## Final Comments
+
+
+
 
 
 
