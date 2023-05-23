@@ -51,7 +51,7 @@ The derivative $\frac{\partial H(f(\lambda))}{\partial f(\lambda)}$ is calculate
 
 $$\frac{\partial H(f(\lambda))}{\partial f(\lambda)} \approx \frac{H(f(\lambda) + \delta(\lambda)) - H(f(\lambda) - \delta(\lambda))}{2 \delta(\lambda)}$$
 
-> **NOTE:** The total kinetic energy in our calculations is constant throughout the pathway, so we may use the potential energy, $U$ instead of $H$, reducing statistical noise.
+> **NOTE:** The total kinetic energy in our calculations is constant throughout the pathway. We may therefore use the potential energy, $U$, instead of $H$ to reduce statistical noise.
 
 We set $\delta$ to be a function of $\lambda$ to avoid numerical issues which may occur for small values of $\lambda$ when using a fixed $\delta$. Setting $\delta$ to be 1% the value of $f(\lambda)$ generally works well:
 
@@ -312,7 +312,7 @@ delta_plus/
 
 The `data.lmp` file is a symlink to the `data.lmp` file in the parent directory. The `input.lmp` file is a symlink to the `input_run.lmp` file in the parent directory. The `potential.lmp` file is set up for the NaCl system and the variable `ein_lambda` has been set according to the `lambda_*/` directory name. The variable `pot_lambda` is kept at 1.0 throughout this stage.
 
-> **NOTE:** The same `data.lmp` **MUST** be used for **ALL** Thermodynamic Integration calculations to maintain consistency.
+> **NOTE:** For a given structure, the same `data.lmp` **MUST** be used for **ALL** Thermodynamic Integration calculations to maintain consistency.
 
 LAMMPS is run in each `lambda_*/` directory.
 
@@ -351,11 +351,11 @@ The free energy of confining the atoms in harmonic wells, calculated with the Tr
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/4_potential_off/](examples/NaCl_water_example/1_bulk/4_potential_off/).
 
-These calculations **MUST** use the same data file as in `3_wells_on`. This file has been copied in.
+> **NOTE:** These calculations **MUST** use the same `data.lmp` file as in `3_wells_on`. This file has already been copied in.
 
 The directories are set up as in `3_wells_on` but now in the `potential.lmp` file the variable `ein_lambda` is set to 1.0 indicating the harmonic wells are fully activated, and the variable `pot_lambda` is varied according to the directory name.
 
-> **NOTE:** The free energy calculated here is to activate the interactions and so must be **negated** in the final calculation.
+> **NOTE:** The free energy pathway used here is the activation of the interactions and so the calculated free energy must be **negated** after integration.
 
 The calculations are run as before, with `lambda_*/` being performed first, follwed by the perturbation in `lambda_*/delta_*/`.
 
@@ -460,7 +460,7 @@ The average value across the 5 runs is 0.0548 J/m<sup>2</sup> (4x larger surface
 
 ### Calculating the Interfacial Free Energy
 
-Now that all the required values have been calculated, the IFE may be derived.
+Now that all the required values have been obtained, the IFE may be calculated.
 
 First we must scale $\Delta f_{Bulk}^{Ein.}$ to the same number of formula units as the slab:
 
@@ -482,11 +482,17 @@ $$\gamma_{Interface} = \gamma_{Liquid} + \gamma_{Solid} = 0.0548 + 0.0739 = 0.12
 
 > **NOTE:** $\gamma_{Solid}$ is the free energy per area to create the slab **in contact with the liquid**, replacing the vacuum. It **CANNOT** be interpreted as the free energy per area to create the slab/vacuum interface.
 
-The computed values of 0.1287 J/m<sup>2</sup> is extremely close to the fully converged value of 0.1281 J/m<sup>2</sup> due to a *miraculous* cancellation of errors.
+The computed $\gamma_{Interface}$ of 0.1287 J/m<sup>2</sup> is extremely close to the fully converged value of 0.1281 J/m<sup>2</sup> due to a **miraculous** cancellation of errors.
 
 ## Final Comments
 
+The example given here used a very simple system and very few integration points along each pathway. For publication worthy results it is vital to ensure every calculation is fully converged and the thermodynamic pathways are adequately sampled.
 
+---
+
+Dr Stephen Yeandel
+
+(May 2023)
 
 
 
