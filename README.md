@@ -51,7 +51,7 @@ The derivative $\frac{\partial H(f(\lambda))}{\partial f(\lambda)}$ is calculate
 
 $$\frac{\partial H(f(\lambda))}{\partial f(\lambda)} \approx \frac{H(f(\lambda) + \delta(\lambda)) - H(f(\lambda) - \delta(\lambda))}{2 \delta(\lambda)}$$
 
-> **NOTE:** The total kinetic energy in our calculations is constant throughout the pathway, so we may use the average potential energy, $U$ instead of $H$, reducing statistical noise.
+> **NOTE:** The total kinetic energy in our calculations is constant throughout the pathway, so we may use the potential energy, $U$ instead of $H$, reducing statistical noise.
 
 We set $\delta$ to be a function of $\lambda$ to avoid numerical issues which may occur for small values of $\lambda$ when using a fixed $\delta$. Setting $\delta$ to be 1% the value of $f(\lambda)$ generally works well:
 
