@@ -1,6 +1,8 @@
 # Einstein_IFE
 This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals. All scripts are tested to work with the 23 June 2022 stable release of [LAMMPS](https://github.com/lammps/lammps/tree/stable_23Jun2022).
 
+Full details of the method are available at [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130).
+
 ## Introduction
 
 The general idea of this approach is to use an Einstein crystal as a reference state into which the solid bulk and slab may be easily transformed. As the free energy of an Einstein crystal does not depend upon the cartesian positions of the constituent atoms, an explicit reconstruction of the material is avoided.
@@ -22,8 +24,6 @@ Transformation of the solid bulk and slab to an Einstein crystal is achieved via
 The IFE of a liquid is more efficiently calculated via the [Kirkwood-Buff method](#The-Kirkwood-Buff-Method).
 
 A [worked example](#A-Worked-Example) is available below.
-
-Full details available at [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130).
 
 ## Theoretical Background
 
@@ -472,11 +472,11 @@ Subtracting $\Delta F_{Slab}^{Ein.}$ from this number gives the free energy of c
 
 $$\Delta F_{Bulk}^{Slab} = \Delta F_{Bulk}^{Ein.} - \Delta F_{Slab}^{Ein.} = 16616.13 - 16585.39 = 30.74 \textrm{ eV}$$
 
-Next this value is divided by twice the surface area of the slab (due to two interfaces) to convert it to a free energy per area. For these simulations the surface area is 3333.21 &#8491;<sup>2</sup>.
+Next this value is divided by twice the surface area of one interface (due to the presence of two interfaces) to give a free energy per area. For these simulations the surface area of one interface is 3333.21 &#8491;<sup>2</sup>.
 
 $$\gamma_{Solid} = \frac{\Delta F_{Bulk}^{Slab}}{2A} = \frac{30.74}{2 \times 3333.21} = 0.004611 \textrm{ eV/&#8491;}^2 = 0.0739 \textrm{ J/m}^2$$
 
-> **NOTE:** Conversion factor from eV/&#8491;<sup>2</sup> to J/m<sup>2</sup> is 16.02176634
+> **NOTE:** $1 \textrm{ eV/&#8491;}^2 = 16.02176634 \textrm{ J/m}^2$
 
 Finally, this value is added to the free energy to create the liquid/vacuum interface:
 
