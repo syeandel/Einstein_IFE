@@ -1,6 +1,8 @@
 # Einstein_IFE
 This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals. All scripts are tested to work with the 23 June 2022 stable release of [LAMMPS](https://github.com/lammps/lammps/tree/stable_23Jun2022).
 
+## Introduction
+
 The general idea of this approach is to use an Einstein crystal as a reference state into which the solid bulk and slab may be easily transformed. As the free energy of an Einstein crystal does not depend upon the cartesian positions of the constituent atoms, an explicit reconstruction of the material is avoided.
 
 The thermodynamic pathway to create the interface may be described as:
@@ -460,7 +462,7 @@ The average value across the 5 runs is 0.0548 J/m<sup>2</sup> (4x larger surface
 
 ### Calculating the Interfacial Free Energy
 
-Now that all the required values have been obtained, the IFE may be calculated.
+Now that all the required values have been obtained, the IFE may be calculated. This will be performed step-by-step here but is equivalent to the equation given in the [introduction](#Introduction).
 
 First we must scale $\Delta f_{Bulk}^{Ein.}$ to the same number of formula units as the slab:
 
