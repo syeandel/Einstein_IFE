@@ -98,7 +98,7 @@ Where $\gamma_{Liquid}$ is the surface tension of the liquid, $L_x$ is the lengt
 
 
 
-## The Scripts
+## LAMMPS Scripts
 
 <details>
 
