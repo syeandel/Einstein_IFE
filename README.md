@@ -462,7 +462,7 @@ The average value across the 5 runs is 0.0548 J/m<sup>2</sup> (4x larger surface
 
 ### Calculating the Interfacial Free Energy
 
-Now that all the required values have been obtained, the IFE may be calculated. This will be performed step-by-step here but is equivalent to the equation given in the [introduction](#Introduction).
+Now that all the required values have been obtained, the IFE may be calculated. This calculation will be performed step-by-step here for clarity, but is equivalent to the equation given in the [introduction](#Introduction).
 
 First we must scale $\Delta f_{Bulk}^{Ein.}$ to the same number of formula units as the slab:
 
