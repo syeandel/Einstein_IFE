@@ -263,6 +263,9 @@ include slab_correction.lmp									# slab dipole correction
 
 
 
+
+
+
 ## Worked Example
 
 <details>
@@ -436,6 +439,16 @@ This value only needs to be calculated once and can be re-scaled and used for al
 The files to perform these calculations are located in [examples/NaCl_water_example/2_slab/](examples/NaCl_water_example/2_slab/).
 
 The slab calculation is performed almost identically to the NaCl bulk calculation. The main difference is that the `slab_correction.lmp` script has been included and is called from `input.lmp`. This correction is only strictly required for slabs with a dipole or charge, but has minimal computational overhead and is also included here as an example. Additionally a wall has been placed at the periodic boundaries parallel to the slab to prevent translation of molecules.
+
+This task is performed in the same 5 stages:
+
+<ol type="a">
+  <li>Calculate average lattice vectors</li>
+  <li>Calculate enthalpy</li>
+  <li>Activate harmonic wells</li>
+  <li>Deactivate interactions</li>
+  <li>Compute free energy of transformation</li>
+</ol>
 
 #### 2a. Calculate average lattice vectors
 
