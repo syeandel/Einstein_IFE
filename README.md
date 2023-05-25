@@ -19,9 +19,9 @@ $$\gamma_{Interface} = \gamma_{Liquid} + \frac{\Delta F_{Bulk}^{Ein.} - \Delta F
 
 Where $\gamma_{Interface}$ is the IFE of the interface, $\gamma_{Liquid}$ is the IFE (surface tension) of the liquid with vacuum, $\Delta F_{Bulk}^{Ein.}$ is the free energy required to transform the solid bulk into an Einstein crystal (of the same stoichiometry as the slab), $\Delta F_{Slab}^{Ein.}$ is the free energy required to transform the slab into an Einstein crystal and $A$ is the area of one interface.
 
-Transformation of the solid bulk and slab to an Einstein crystal is achieved via [Thermodynamic Integration](#Thermodynamic-Integration).
+Transformation of the solid bulk and slab to an Einstein crystal is achieved via [Thermodynamic Integration](###Thermodynamic-Integration).
 
-The IFE of a liquid is more efficiently calculated via the [Kirkwood-Buff method](#The-Kirkwood-Buff-Method).
+The IFE of a liquid is more efficiently calculated via the [Kirkwood-Buff method](###The-Kirkwood-Buff-Method).
 
 A [worked example](#Worked-Example) is available below.
 
