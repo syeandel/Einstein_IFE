@@ -23,9 +23,15 @@ Transformation of the solid bulk and slab to an Einstein crystal is achieved via
 
 The IFE of a liquid is more efficiently calculated via the [Kirkwood-Buff method](#The-Kirkwood-Buff-Method).
 
-A [worked example](#A-Worked-Example) is available below.
+A [worked example](#Worked-Example) is available below.
 
 ## Theoretical Background
+
+<details>
+
+<summary>
+  Expand
+</summary>
 
 ### Thermodynamic Integration
 
@@ -71,6 +77,7 @@ Where $\gamma_{Liquid}$ is the surface tension of the liquid, $L_x$ is the lengt
 
 > **NOTE:** The Kirkwood-Buff method is applicable only to fluid interfaces and **CANNOT** be used for interfaces with solids.
 
+</details>
 
 
 
@@ -78,11 +85,15 @@ Where $\gamma_{Liquid}$ is the surface tension of the liquid, $L_x$ is the lengt
 
 
 
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
 
 
@@ -90,6 +101,12 @@ Where $\gamma_{Liquid}$ is the surface tension of the liquid, $L_x$ is the lengt
 
 
 ## The Scripts
+
+<details>
+
+<summary>
+  Expand
+</summary>
 
 These scripts provide the core functionality of the method and can be found in [scripts/](scripts/).
 
@@ -226,6 +243,7 @@ fix x_walls all wall/lj93 xlo EDGE 0.001 3.5 3.0 xhi EDGE 0.001 3.5 3.0 units bo
 include slab_correction.lmp									# slab dipole correction
 ```
 
+</details>
 
 
 
@@ -247,8 +265,13 @@ include slab_correction.lmp									# slab dipole correction
 
 
 
+## Worked Example
 
-## A Worked Example
+<details>
+
+<summary>
+  Expand
+</summary>
 
 In this example the IFE of the NaCl {100} surface with pure water is calculated. The files may be found in [examples/NaCl_water_example/](examples/NaCl_water_example/). These example directories make extensive use of symlinks which enables efficient use of storage space and also helps to ensure consistency between calculations.
 
@@ -264,6 +287,14 @@ The four stages required for the calculation of IFEs are:
 4. Calculating the Interfacial Free Energy
 
 ### 1. NaCl Bulk to Einstein Crystal
+
+<details>
+
+<summary>
+  Expand
+</summary>
+
+The files to perform these calculations are located in [examples/NaCl_water_example/1_bulk/](examples/NaCl_water_example/1_bulk/).
 
 The first task is to compute the free energy of transforming NaCl bulk into an Einstein crystal. This is performed in 5 stages:
 
@@ -394,7 +425,15 @@ $$\Delta f_{Bulk}^{Ein.} = \frac{\Delta F_{Bulk}^{Ein.}}{N_{Bulk}} = \frac{57425
 
 This value only needs to be calculated once and can be re-scaled and used for all NaCl IFE calculations.
 
+</details>
+
 ### 2. NaCl Slab to Einstein Crystal
+
+<details>
+
+<summary>
+  Expand
+</summary>
 
 The files to perform these calculations are located in [examples/NaCl_water_example/2_slab/](examples/NaCl_water_example/2_slab/).
 
@@ -456,7 +495,15 @@ The free energy of transforming the NaCl slab into an Einstein crystal and leavi
 
 $$\Delta F_{Slab}^{Ein.} = 359.06 + 16226.33 = 16585.39 \textrm{ eV}$$
 
+</details>
+
 ### 3. Water/Vacuum Surface Tension
+
+<details>
+
+<summary>
+  Expand
+</summary>
 
 The files to perform this calculation are located in [examples/KB_water_tension/](examples/KB_water_tension/).
 
@@ -466,7 +513,7 @@ This directory contains 5 sub-diredctories, labelled `run_{1..5}`. Each sub-dire
 
 LAMMPS is run in each sub-directory.
 
-Each run will produce a file called `FE_integral.txt' which prints the current value of the surface tension in J/m<sup>2</sup>.
+Each run will produce a file called `FE_integral.txt` which prints the current value of the surface tension in J/m<sup>2</sup>.
 
 Collecting the final values from each `FE_integral.txt` into a table:
 
@@ -480,7 +527,15 @@ Collecting the final values from each `FE_integral.txt` into a table:
 
 The average value across the 5 runs is 0.0548 J/m<sup>2</sup> (4x larger surface area and 10x runs converged value: 0.0581 J/m<sup>2</sup>).
 
+</details>
+
 ### 4. Calculating the Interfacial Free Energy
+
+<details>
+
+<summary>
+  Expand
+</summary>
 
 Now that all the required values have been obtained, the IFE may be calculated. This calculation will be performed step-by-step here for clarity, but is equivalent to the equation given in the [introduction](#Introduction).
 
@@ -506,9 +561,13 @@ $$\gamma_{Interface} = \gamma_{Liquid} + \gamma_{Solid} = 0.0548 + 0.0739 = 0.12
 
 The computed $\gamma_{Interface}$ of 0.1287 J/m<sup>2</sup> is extremely close to the fully converged value of 0.1281 J/m<sup>2</sup> due to a **miraculous** cancellation of errors.
 
-## Final Comments
+</details>
+
+### Final Comments
 
 The example given here used a very simple system and very few integration points along each pathway. For publication worthy results it is vital to ensure every calculation is fully converged and the thermodynamic pathways are adequately sampled.
+
+</details>
 
 ---
 
