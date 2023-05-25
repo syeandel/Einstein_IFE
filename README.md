@@ -256,35 +256,40 @@ The worked example provided here uses a very minimal number of Thermodynamic Int
 
 > **NOTE:** Full publication quality calculations **WILL** require many additional points.
 
-The three components required for the calculation of IFEs are:
+The four stages required for the calculation of IFEs are:
 
 1. NaCl Bulk to Einstein Crystal
 2. NaCl Slab to Einstein Crystal
 3. Water/Vacuum Surface Tension
+4. Calculating the Interfacial Free Energy
 
-### NaCl Bulk to Einstein Crystal
+### 1. NaCl Bulk to Einstein Crystal
 
 The first task is to compute the free energy of transforming NaCl bulk into an Einstein crystal. This is performed in 5 stages:
 
-1. Calculate average lattice vectors
-2. Calculate enthalpy
-3. Activate harmonic wells
-4. Deactivate interactions
-5. Compute free energy of transformation
+<ol type="a">
+  <li>Calculate average lattice vectors</li>
+  <li>Calculate enthalpy</li>
+  <li>Activate harmonic wells</li>
+  <li>Deactivate interactions</li>
+  <li>Compute free energy of transformation</li>
+</ol>
 
-#### Calculate average lattice vectors
+#### 1a. Calculate average lattice vectors
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/1_lattice_equilibration/](examples/NaCl_water_example/1_bulk/1_lattice_equilibration/).
 
 In this calculation a cubic unit cell of NaCl is read from `data.lmp` and the `input_lattequi.lmp` script is used to create a supercell with the correct average lattice vectors for the conditions specified.
 
-#### Calculate enthalpy
+#### 1b. Calculate enthalpy
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/2_enthalpy/](examples/NaCl_water_example/1_bulk/2_enthalpy/).
 
 This stage is optional but useful if the interfacial enthalpy is desired at a later date. The `lattequi_data.lmp` file has been copied from the previous stage and renamed `data.lmp`. LAMMPS is run and an average potential energy is calculated and a new data file called `prod_data.lmp` is produced.
 
-#### Activate harmonic wells
+The average potential energy is -56247.28 eV or -8.137627 eV/f.u.
+
+#### 1c. Activate harmonic wells
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/3_wells_on/](examples/NaCl_water_example/1_bulk/3_wells_on/).
 
@@ -349,7 +354,7 @@ The outputs give an average potential energy of the `lambda_*/delta_*/` trajecto
 
 The free energy of confining the atoms in harmonic wells, calculated with the Trapezoidal rule, is 1202.61 eV (128-point converged value: 1200.10 eV).
 
-#### Deactivate interactions
+#### 1d. Deactivate interactions
 
 The files to perform this calculation are located in [examples/NaCl_water_example/1_bulk/4_potential_off/](examples/NaCl_water_example/1_bulk/4_potential_off/).
 
@@ -377,7 +382,7 @@ The following data is obtained:
 
 The free energy of **deactivating** the interactions, calculated with the Trapezoidal rule, is 56222.73 eV (128-point converged value: 56213.12 eV).
 
-#### Compute free energy of transformation
+#### 1e. Compute free energy of transformation
 
 The free energy of transforming bulk NaCl into an Einstein crystal is given by the free energy of activating harmonic wells minus the free energy of activating the interactions:
 
@@ -389,16 +394,27 @@ $$\Delta f_{Bulk}^{Ein.} = \frac{\Delta F_{Bulk}^{Ein.}}{N_{Bulk}} = \frac{57425
 
 This value only needs to be calculated once and can be re-scaled and used for all NaCl IFE calculations.
 
-### NaCl Slab to Einstein Crystal
+### 2. NaCl Slab to Einstein Crystal
 
 The files to perform these calculations are located in [examples/NaCl_water_example/2_slab/](examples/NaCl_water_example/2_slab/).
 
-The slab calculation is performed almost identically to the NaCl bulk calculation. There are only 2 differences:
+The slab calculation is performed almost identically to the NaCl bulk calculation. The main difference is that the `slab_correction.lmp` script has been included and is called from `input.lmp`. This correction is only strictly required for slabs with a dipole or charge, but has minimal computational overhead and is also included here as an example. Additionally a wall has been placed at the periodic boundaries parallel to the slab to prevent translation of molecules.
 
-1. The lattice equilibration is performed with the $x$, $xy$ and $xz$ components locked. This maintains the vacuum gap between the periodic images of the slab.
-2. The `slab_correction.lmp` script has been included and is called from `input.lmp`. This correction is only strictly required for slabs with a dipole or charge, but has minimal computational overhead and is also included here as an example. Additionally a wall has been placed at the periodic boundaries parallel to the slab to prevent translation of molecules.
+#### 2a. Calculate average lattice vectors
 
-#### Activate harmonic wells
+The files to perform this calculation are located in [examples/NaCl_water_example/2_slab/1_lattice_equilibration/](examples/NaCl_water_example/2_slab/1_lattice_equilibration/).
+
+In this calculation a slab of NaCl in contact with water on the {100} face is read from `data.lmp` and the `input_lattequi.lmp` script is used to calculate the average lattice vectors for the conditions specified. Because this system has a slab geometry the lattice equilibration is performed with the $x$, $xy$ and $xz$ components locked. This maintains the vacuum gap between the periodic images of the slab.
+
+#### 2b. Calculate enthalpy
+
+The files to perform this calculation are located in [examples/NaCl_water_example/2_slab/2_enthalpy/](examples/NaCl_water_example/2_slab/2_enthalpy/).
+
+This stage is optional but useful if the interfacial enthalpy is desired at a later date. The `lattequi_data.lmp` file has been copied from the previous stage and renamed `data.lmp`. LAMMPS is run and an average potential energy is calculated and a new data file called `prod_data.lmp` is produced.
+
+The average potential energy is -18989.01 eV.
+
+#### 2c. Activate harmonic wells
 
 | $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -414,7 +430,7 @@ The slab calculation is performed almost identically to the NaCl bulk calculatio
 
 The free energy of confining the atoms in harmonic wells, calculated with the Trapezoidal rule, is 359.06 eV (128-point converged value: 358.70 eV).
 
-#### Deactivate interactions
+#### 2d. Deactivate interactions
 
 | $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -430,13 +446,13 @@ The free energy of confining the atoms in harmonic wells, calculated with the Tr
 
 The free energy of **deactivating** the interactions, calculated with the Trapezoidal rule, is 16226.33 eV (128-point converged value: 16224.82 eV).
 
-#### Compute free energy of transformation
+#### 2e. Compute free energy of transformation
 
 The free energy of transforming the NaCl slab into an Einstein crystal and leaving a vacuum gap with 2 liquid/vacuum surfaces is:
 
 $$\Delta F_{Slab}^{Ein.} = 359.06 + 16226.33 = 16585.39 \textrm{ eV}$$
 
-### Water/Vacuum Surface Tension
+### 3. Water/Vacuum Surface Tension
 
 The files for these calculations may be found in [examples/KB_water_tension/](examples/KB_water_tension/).
 
@@ -460,7 +476,7 @@ Collecting the final values from each `FE_integral.txt` into a table:
 
 The average value across the 5 runs is 0.0548 J/m<sup>2</sup> (4x larger surface area and 10x runs converged value: 0.0581 J/m<sup>2</sup>).
 
-### Calculating the Interfacial Free Energy
+### 4. Calculating the Interfacial Free Energy
 
 Now that all the required values have been obtained, the IFE may be calculated. This calculation will be performed step-by-step here for clarity, but is equivalent to the equation given in the [introduction](#Introduction).
 
