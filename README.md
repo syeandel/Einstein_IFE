@@ -1,5 +1,7 @@
 # Einstein_IFE
-This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals. All scripts are tested to work with the 23 June 2022 stable release of [LAMMPS](https://github.com/lammps/lammps/tree/stable_23Jun2022).
+This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals.
+
+All scripts have been tested to work with the 23 June 2022 stable release of [LAMMPS](https://github.com/lammps/lammps/tree/stable_23Jun2022).
 
 Full details of the method are available at [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130).
 
