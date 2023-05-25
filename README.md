@@ -23,7 +23,7 @@ Where $\gamma_{Interface}$ is the IFE of the interface, $\gamma_{Liquid}$ is the
 
 Transformation of the solid bulk and slab to an Einstein crystal is achieved via Thermodynamic Integration. The IFE of a liquid is more efficiently calculated via the Kirkwood-Buff method. Details may be found in the [Theoretical Background](#Theoretical-Background).
 
-A [worked example](#Worked-Example) is available below.
+A [Worked Example](#Worked-Example) is available below.
 
 ## Theoretical Background
 
