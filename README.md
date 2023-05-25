@@ -563,7 +563,7 @@ The computed $\gamma_{Interface}$ of 0.1287 J/m<sup>2</sup> is extremely close t
 
 ### Final Comments
 
-The example given here used a very simple system and very few integration points along each pathway. For publication worthy results it is vital to ensure every calculation is fully converged and the thermodynamic pathways are adequately sampled.
+The example given here used a very simple system and very few integration points along each pathway. For publication quality results it is vital to ensure every calculation is fully converged and the thermodynamic pathways are adequately sampled.
 
 </details>
 
