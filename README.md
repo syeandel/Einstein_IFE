@@ -416,6 +416,8 @@ The average potential energy is -18989.01 eV.
 
 #### 2c. Activate harmonic wells
 
+The files to perform this calculation are located in [examples/NaCl_water_example/2_slab/3_wells_on/](examples/NaCl_water_example/2_slab/3_wells_on/).
+
 | $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 0.0000 | 0.00000000 | 0.00000000 | 0.00000000 |  |  |  | 0.00 |
@@ -431,6 +433,8 @@ The average potential energy is -18989.01 eV.
 The free energy of confining the atoms in harmonic wells, calculated with the Trapezoidal rule, is 359.06 eV (128-point converged value: 358.70 eV).
 
 #### 2d. Deactivate interactions
+
+The files to perform this calculation are located in [examples/NaCl_water_example/2_slab/4_potential_off/](examples/NaCl_water_example/2_slab/4_potential_off/).
 
 | $\lambda$ | $f(\lambda)$| $\frac{\partial f(\lambda)}{\partial \lambda}$ | $\delta(\lambda)$ | $H(f(\lambda) - \delta(\lambda))$ | $H(f(\lambda))$ | $H(f(\lambda) + \delta(\lambda))$ | $\frac{\partial H(\lambda)}{\partial \lambda}$ |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -454,7 +458,7 @@ $$\Delta F_{Slab}^{Ein.} = 359.06 + 16226.33 = 16585.39 \textrm{ eV}$$
 
 ### 3. Water/Vacuum Surface Tension
 
-The files for these calculations may be found in [examples/KB_water_tension/](examples/KB_water_tension/).
+The files to perform this calculation are located in [examples/KB_water_tension/](examples/KB_water_tension/).
 
 This directory contains 5 sub-diredctories, labelled `run_{1..5}`. Each sub-directory contains an identical `data.lmp` file for a pure water slab with 2 water/vacuum interfaces. The `input.lmp` file in each sub-directory is identical except for the value of the variable `seed`, which will allow each run to explore a separate trajectory.
 
