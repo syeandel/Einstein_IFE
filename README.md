@@ -276,7 +276,7 @@ include slab_correction.lmp									# slab dipole correction
   Expand
 </summary>
 
-In this example the IFE of the NaCl {100} surface with pure water is calculated. The files may be found in [examples/NaCl_water_example/](examples/NaCl_water_example/). These example directories make extensive use of symlinks which enables efficient use of storage space and also helps to ensure consistency between calculations.
+In this example the IFE of the NaCl {100} surface with pure water is calculated using the model of [Joung and Cheatham](https://doi.org/10.1021/jp8001614) and the [SPC/Fw](https://doi.org/10.1063/1.2136877) water model. The files may be found in [examples/NaCl_water_example/](examples/NaCl_water_example/). These example directories make extensive use of symlinks which enables efficient use of storage space and also helps to ensure consistency between calculations.
 
 The worked example provided here uses a very minimal number of Thermodynamic Integration points (values of $\lambda$). Alongside the free energy integrals calculated in this example, fully converged values using 128 points and Romberg's method will be presented in parentheses.
 
