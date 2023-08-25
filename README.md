@@ -1,9 +1,14 @@
-# Einstein_IFE
-This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals.
+# Einstein IFE
+This repository contains example LAMMPS scripts for computing Interfacial Free Energies (IFEs) via Einstein crystals. This package is presented as part of the "Simulation Interfacial Free Energy Techniques" (SIFT) consortium which includes the packages:
 
-All scripts have been tested to work with the 23 June 2022 stable release of [LAMMPS](https://github.com/lammps/lammps/tree/stable_23Jun2022).
+  - [Cleaving](https://github.com/demonico85/cleaving)
+  - [MOLD](https://github.com/AndresRTejedor/Mold)
 
-Full details of the method are available at [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130).
+![SIFT group](https://github.com/demonico85/cleaving/blob/ea705cb97942cbfbb4b4365cc07b44c80e9b84fb/docs/figs/final_logo.png)
+
+All scripts contained here have been tested to work with the 23 June 2022 stable release of [LAMMPS](https://github.com/lammps/lammps/tree/stable_23Jun2022).
+
+Full details of the Einstein IFE method are available at [DOI: 10.1063/5.0095130](https://doi.org/10.1063/5.0095130).
 
 ## Introduction
 
